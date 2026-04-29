@@ -5,7 +5,7 @@ mod int_registers {
     static mut Y: u8 = 0x00;
     static mut PC_hi: u8 = 0x00;
     static mut PC_lo: u8 = 0x00;
-    static mut SP: u8 = 0x00;
+    static mut SP: u8 = 0x00; // more commonly known as S
     // processor flags
     static mut N: bool = false;
     static mut V: bool = false;
@@ -14,3 +14,5 @@ mod int_registers {
     static mut Z: bool = false;
     static mut C: bool = false;
 }
+
+mod instruction_set;
