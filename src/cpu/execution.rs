@@ -1,9 +1,12 @@
 use super::instruction_set::Instruction;
 
 impl super::CPU {
-    fn execute_instruction(instruction : Instruction) {
-        match(instruction) {
-            Instruction::NOP => {}
+    fn _execute_instruction(&mut self, instruction : Instruction) {
+        match instruction  {
+            Instruction::NOP => {},
+            Instruction::LDA(op) => {
+                self.A = op;
+            }
         }
     }  
 }
