@@ -1,4 +1,10 @@
 pub enum Instruction {
-    LDA(u8),
+    //access
+    LDA(u8, AddressingMode),
+    //other
     NOP
+}
+
+pub enum AddressingMode {
+    Immediate
 }
