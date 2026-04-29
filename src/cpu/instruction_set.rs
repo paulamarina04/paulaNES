@@ -1,3 +1,3 @@
-enum Instruction {
+pub enum Instruction {
     
 }
