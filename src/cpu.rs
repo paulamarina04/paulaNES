@@ -1,5 +1,8 @@
-#[allow(dead_code,non_snake_case)]
-struct CPU {
+mod instruction_set;
+mod execution;
+
+#[allow(non_snake_case)]
+struct _CPU {
     A: u8,
     X: u8,
     Y: u8,
@@ -15,5 +18,24 @@ struct CPU {
     C: bool 
 }
 
-mod instruction_set;
-mod execution;
+impl _CPU {
+    fn _new() -> Self {
+        let ret= Self {
+            A: 0x00,
+            X: 0x00,
+            Y: 0x00,
+            PC_hi: 0x00,
+            PC_lo: 0x00,
+            S: 0x00, 
+            // processor flags
+            N: false,
+            V: false,
+            D: false,
+            I: false,
+            Z: false,
+            C: false, 
+        };
+        return ret;
+    }
+}
+
