@@ -1,7 +1,9 @@
 use super::instruction_set::Instruction;
 
-fn execute_instruction(instruction : Instruction) {
-    match(instruction) {
-        Instruction::NOP => {}
-    }
+impl super::CPU {
+    fn execute_instruction(instruction : Instruction) {
+        match(instruction) {
+            Instruction::NOP => {}
+        }
+    }  
 }

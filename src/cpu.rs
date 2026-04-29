@@ -1,18 +1,18 @@
-#[allow(dead_code,non_upper_case_globals)]
-mod int_registers {
-    static mut A: u8 = 0x00;
-    static mut X: u8 = 0x00;
-    static mut Y: u8 = 0x00;
-    static mut PC_hi: u8 = 0x00;
-    static mut PC_lo: u8 = 0x00;
-    static mut SP: u8 = 0x00; // more commonly known as S
+#[allow(dead_code,non_snake_case)]
+struct CPU {
+    A: u8,
+    X: u8,
+    Y: u8,
+    PC_hi: u8,
+    PC_lo: u8,
+    S: u8, 
     // processor flags
-    static mut N: bool = false;
-    static mut V: bool = false;
-    static mut D: bool = false;
-    static mut I: bool = false;
-    static mut Z: bool = false;
-    static mut C: bool = false;
+    N: bool,
+    V: bool,
+    D: bool,
+    I: bool,
+    Z: bool,
+    C: bool 
 }
 
 mod instruction_set;
