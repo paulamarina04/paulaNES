@@ -1,8 +1,7 @@
 mod instruction_set;
 mod execution;
-
 #[allow(non_snake_case)]
-struct _CPU {
+struct CPU {
     A: u8,
     X: u8,
     Y: u8,
@@ -18,8 +17,8 @@ struct _CPU {
     C: bool 
 }
 
-impl _CPU {
-    fn _new() -> Self {
+impl CPU {
+    fn new() -> Self {
         let ret= Self {
             A: 0x00,
             X: 0x00,
