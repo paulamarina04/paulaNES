@@ -8,6 +8,14 @@ pub enum Instruction {
     TYA,
     TXS,
     TSX,
+    //flags
+    CLC,
+    SEC,
+    CLI,
+    SEI,
+    CLD,
+    SED,
+    CLV,
     //other
     NOP
 }

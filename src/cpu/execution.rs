@@ -34,6 +34,28 @@ impl super::CPU {
                 let val = self.S;
                 self.X = val;
             },
+            //flags
+            Instruction::CLC => {
+                self.C = false;
+            },
+            Instruction::SEC => {
+                self.C = true;
+            },
+            Instruction::CLI => {
+                self.I = false;
+            },
+            Instruction::SEI => {
+                self.I = true;
+            },
+            Instruction::CLD => {
+                self.D = false;
+            },
+            Instruction::SED => {
+                self.D = true;
+            },
+            Instruction::CLV => {
+                self.V = false;
+            },
             //other
             Instruction::NOP => {}
         }
@@ -122,5 +144,72 @@ mod test {
         cpu.execute_instruction(instruction);
         assert_eq!(cpu.X, cpu.S, "fail in TSX");
     }
+
+    // flag instructions
+
+    #[test]
+    fn test_clc() {
+        let mut cpu: CPU = CPU::new();
+        cpu.C = true;
+        let instruction = Instruction::CLC;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.C, false);
+    }
+
+    #[test]
+    fn test_sec() {
+        let mut cpu: CPU = CPU::new();
+        cpu.C = false;
+        let instruction = Instruction::SEC;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.C, true);
+    }
+
+#[test]
+    fn test_cli() {
+        let mut cpu: CPU = CPU::new();
+        cpu.I = true;
+        let instruction = Instruction::CLI;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.I, false);
+    }
+
+    #[test]
+    fn test_sei() {
+        let mut cpu: CPU = CPU::new();
+        cpu.I = false;
+        let instruction = Instruction::SEI;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.I, true);
+    }
+
+#[test]
+    fn test_cld() {
+        let mut cpu: CPU = CPU::new();
+        cpu.D = true;
+        let instruction = Instruction::CLD;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.D, false);
+    }
+
+    #[test]
+    fn test_sed() {
+        let mut cpu: CPU = CPU::new();
+        cpu.D = false;
+        let instruction = Instruction::SED;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.D, true);
+    }
+
+#[test]
+    fn test_clv() {
+        let mut cpu: CPU = CPU::new();
+        cpu.V = true;
+        let instruction = Instruction::CLV;
+        cpu.execute_instruction(instruction);
+        assert_eq!(cpu.V, false);
+    }
+
+
 }
 
