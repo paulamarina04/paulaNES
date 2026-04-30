@@ -1,25 +1,14 @@
 pub enum Instruction {
     //access
-    LDA(u8, AddressingMode),
+    LDA(AddrMode),
     //transfer
-    TAX,
-    TXA,
-    TAY,
-    TYA,
-    TXS,
-    TSX,
+    TAX, TXA, TAY, TYA, TXS, TSX,
     //flags
-    CLC,
-    SEC,
-    CLI,
-    SEI,
-    CLD,
-    SED,
-    CLV,
+    CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other
     NOP
 }
 
-pub enum AddressingMode {
-    Immediate
+pub enum AddrMode {
+    Immediate(u8)
 }

@@ -1,13 +1,13 @@
 use super::instruction_set::Instruction;
-use super::instruction_set::AddressingMode;
+use super::instruction_set::AddrMode;
 
 impl super::CPU {
     fn execute_instruction(&mut self, instruction : Instruction) {
         match instruction  {
             //access
-            Instruction::LDA(op, addr_mode) => {
-                let val = get_addressed_val(op, addr_mode);
-                self.A = op;
+            Instruction::LDA(addr_mode) => {
+                let val = get_addressed_val(addr_mode);
+                self.A = val;
             },
             //transfer
             Instruction::TAX => {
@@ -62,10 +62,10 @@ impl super::CPU {
     }  
 }
 
-fn get_addressed_val(op: u8, addr_mode: AddressingMode) -> u8 {
+fn get_addressed_val(addr_mode: AddrMode) -> u8 {
     let ret: u8;
     match addr_mode {
-        AddressingMode::Immediate => { 
+        AddrMode::Immediate(op) => { 
             ret = op;
         }
     }
@@ -84,8 +84,8 @@ mod test {
     fn test_LDA() {
         let mut cpu: CPU = CPU::new();
         let val: u8 = 0xFF;
-        let addr_mode = AddressingMode::Immediate;
-        cpu.execute_instruction(Instruction::LDA(val, addr_mode));
+        let addr_mode = AddrMode::Immediate(val);
+        cpu.execute_instruction(Instruction::LDA(addr_mode));
         assert_eq!(val, cpu.A, "fail in LDA immediate");
     }
 
