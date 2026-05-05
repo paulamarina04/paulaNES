@@ -4,7 +4,7 @@ pub enum Instruction {
     //transfer
     TAX, TXA, TAY, TYA, TXS, TSX,
     //arithmetic
-    ADC(AddrMode),
+    ADC(AddrMode), SBC(AddrMode),
     //flags
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other

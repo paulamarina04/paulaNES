@@ -1,5 +1,6 @@
 use super::instruction_set::Instruction;
 use super::instruction_set::AddrMode;
+use std::any::Any;
 use std::num::Wrapping;
 
 impl super::CPU {
@@ -48,7 +49,14 @@ impl super::CPU {
                 self.Z = result == 0x00;
                 self.V = (result ^ val1) & (result ^ val2) & 0b10000000 == 0b10000000;
                 self.N = result & 0b10000000 == 0b10000000;
-            }
+            },
+            Instruction::SBC(addr_mode) => {
+                let val = get_addressed_val(addr_mode);
+                let val = !val;
+                let new_addr = AddrMode::Immediate(val); // value is already dereferenced
+                let instruction = Instruction::ADC(new_addr);
+                self.execute_instruction(instruction);
+            },
             //flags
             Instruction::CLC => {
                 self.C = false;
@@ -231,6 +239,66 @@ mod test {
         assert_eq!(true, cpu.Z, "0x80 + 0x80 no carry: wrong zero flag");
         assert_eq!(true, cpu.V, "0x80 + 0x80 no carry: wrong overflow flag");
         assert_eq!(false, cpu.N, "0x80 + 0x80 no carry: wrong negative flag");
+    }
+
+    #[test]
+    fn test_sbc() { // C and V flag behaviour is kinda unintuitive here
+        let mut cpu = CPU::new();
+        // 2 - 1 with carry
+        cpu.A = 0x02;
+        let op = 0x01;
+        cpu.C = true;
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.A);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.N);
+        // 2 - 1 no carry
+        cpu.A = 0x02;
+        let op = 0x01;
+        cpu.C = false;
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.A);
+        assert_eq!(true, cpu.C);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.N);
+        // 1 - 2 with carry
+        cpu.A = 0x01;
+        let op = 0x02;
+        cpu.C = true;
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.A);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.V);
+        assert_eq!(true, cpu.N);
+        // 1 - (-1) with carry
+        cpu.A = 0x01;
+        let op = 0xFF;
+        cpu.C = true;
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x02, cpu.A);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.N);
+        // (-1) - 1 with carry
+        cpu.A = 0xFF;
+        let op = 0x01;
+        cpu.C = true;
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFE, cpu.A);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.V);
+        assert_eq!(true, cpu.N);
     }
 
     // flag instructions
