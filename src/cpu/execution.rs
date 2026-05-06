@@ -57,6 +57,26 @@ impl super::CPU {
                 let instruction = Instruction::ADC(new_addr);
                 self.execute_instruction(instruction);
             },
+            Instruction::INX => {
+                let result = self.X + 1;
+                self.X = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::DEX => {
+                let result = self.X - 1;
+                self.X = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::INY => {
+                let result = self.Y + 1;
+                self.Y = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::DEY => {
+                let result = self.Y - 1;
+                self.Y = result;
+                update_nz_flags(self, result);
+            },
             //flags
             Instruction::CLC => {
                 self.C = false;
@@ -93,6 +113,11 @@ fn get_addressed_val(addr_mode: AddrMode) -> u8 {
         }
     }
     return ret;
+}
+
+fn update_nz_flags(cpu: &mut super::CPU, result: u8) {
+    cpu.Z = result == 0x00;
+    cpu.N = result & 0x80 == 0x80;
 }
 
 
@@ -300,6 +325,49 @@ mod test {
         assert_eq!(false, cpu.V);
         assert_eq!(true, cpu.N);
     }
+
+    #[test]
+    fn test_inx() {
+        let mut cpu = CPU::new();
+        cpu.X = 0x00;
+        let instruction = Instruction::INX;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.X);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+    }
+    #[test]
+    fn test_dex() {
+        let mut cpu = CPU::new();
+        cpu.X = 0x01;
+        let instruction = Instruction::DEX;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.X);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.N);
+    }
+    #[test]
+    fn test_iny() {
+        let mut cpu = CPU::new();
+        cpu.Y = 0x00;
+        let instruction = Instruction::INY;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.Y);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+    }
+    #[test]
+    fn test_dey() {
+        let mut cpu = CPU::new();
+        cpu.Y = 0x01;
+        let instruction = Instruction::DEY;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.Y);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.N);
+    }
+
+
 
     // flag instructions
 
