@@ -5,6 +5,8 @@ pub enum Instruction {
     TAX, TXA, TAY, TYA, TXS, TSX,
     //arithmetic
     ADC(AddrMode), SBC(AddrMode), INX, DEX, INY, DEY,
+    //bitwise
+    AND(AddrMode), ORA(AddrMode), XOR(AddrMode), BIT(AddrMode),
     //flags
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other

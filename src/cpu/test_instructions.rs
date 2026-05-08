@@ -244,6 +244,61 @@
     }
 
 
+    // bitwise instructions
+
+    #[test]
+    fn test_and() {
+        let mut cpu: CPU = CPU::new();
+        let val1: u8 = 0b11001100;
+        let val2: u8 = 0b10101010;
+        cpu.A = val1;
+        let instruction = Instruction::AND(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b10001000, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
+    #[test]
+    fn test_ora() {
+        let mut cpu: CPU = CPU::new();
+        let val1: u8 = 0b11001100;
+        let val2: u8 = 0b10101010;
+        cpu.A = val1;
+        let instruction = Instruction::ORA(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11101110, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
+    #[test]
+    fn test_xor() {
+        let mut cpu: CPU = CPU::new();
+        let val1: u8 = 0b11001100;
+        let val2: u8 = 0b10101010;
+        cpu.A = val1;
+        let instruction = Instruction::XOR(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01100110, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+    }
+
+    #[test]
+    fn test_bit() {
+        let mut cpu: CPU = CPU::new();
+        let val1: u8 = 0b11001100;
+        let val2: u8 = 0b10000000;
+        cpu.A = val1;
+        let instruction = Instruction::BIT(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11001100, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
+
 
     // flag instructions
 

@@ -76,6 +76,34 @@ impl super::CPU {
                 self.Y = result;
                 update_nz_flags(self, result);
             },
+            //biwise
+            Instruction::AND(addr_mode) => {
+                let val1 = self.A;
+                let val2 = get_addressed_val(addr_mode);
+                let result = val1 & val2;
+                self.A = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::ORA(addr_mode) => {
+                let val1 = self.A;
+                let val2 = get_addressed_val(addr_mode);
+                let result = val1 | val2;
+                self.A = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::XOR(addr_mode) => {
+                let val1 = self.A;
+                let val2 = get_addressed_val(addr_mode);
+                let result = val1 ^ val2;
+                self.A = result;
+                update_nz_flags(self, result);
+            },
+            Instruction::BIT(addr_mode) => {
+                let val1 = self.A;
+                let val2 = get_addressed_val(addr_mode);
+                let result = val1 & val2;
+                update_nz_flags(self, result);
+            },
             //flags
             Instruction::CLC => {
                 self.C = false;
