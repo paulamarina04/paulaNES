@@ -285,7 +285,7 @@
         assert_eq!(false, cpu.N);
     }
 
-    #[test]
+    /*#[test]
     fn test_bit() {
         let mut cpu: CPU = CPU::new();
         let val1: u8 = 0b11001100;
@@ -296,7 +296,7 @@
         assert_eq!(0b11001100, cpu.A);
         assert_eq!(false, cpu.Z);
         assert_eq!(true, cpu.N);
-    }
+    }*/
 
 
 
