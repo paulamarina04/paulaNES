@@ -1,5 +1,9 @@
 mod instruction_set;
 mod execution;
+#[cfg(test)]
+mod test_instructions;
+
+
 #[allow(non_snake_case)]
 struct CPU {
     A: u8,
