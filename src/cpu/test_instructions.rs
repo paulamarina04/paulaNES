@@ -11,6 +11,8 @@
         let addr_mode = AddrMode::Immediate(val);
         cpu.execute_instruction(Instruction::LDA(addr_mode));
         assert_eq!(val, cpu.A, "fail in LDA immediate");
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
     }
 
     // transfer instructions

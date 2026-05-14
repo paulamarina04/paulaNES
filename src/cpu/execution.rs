@@ -9,6 +9,7 @@ impl super::CPU {
             Instruction::LDA(addr_mode) => {
                 let val = get_addressed_val(addr_mode);
                 self.A = val;
+                update_nz_flags(self, val);
             },
             //transfer
             Instruction::TAX => {
