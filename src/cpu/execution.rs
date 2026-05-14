@@ -1,5 +1,7 @@
+use crate::cpu::instruction_set::AddrMode16;
+
 use super::instruction_set::Instruction;
-use super::instruction_set::AddrMode;
+use super::instruction_set::AddrMode8;
 use std::num::Wrapping;
 
 impl super::CPU {
@@ -7,7 +9,7 @@ impl super::CPU {
         match instruction  {
             //access
             Instruction::LDA(addr_mode) => {
-                let val = get_addressed_val(addr_mode);
+                let val = get_addressed_val_8(addr_mode);
                 self.A = val;
                 update_nz_flags(self, val);
             },
@@ -39,7 +41,7 @@ impl super::CPU {
             //arithmetic
             Instruction::ADC(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val(addr_mode);
+                let val2 = get_addressed_val_8(addr_mode);
                 let carry = if self.C { 0x01 } else { 0x00 };
                 let result = Wrapping(val1) + Wrapping(val2) + Wrapping(carry);
                 let result: u8 = result.0;
@@ -51,9 +53,9 @@ impl super::CPU {
                 self.N = result & 0b10000000 == 0b10000000;
             },
             Instruction::SBC(addr_mode) => {
-                let val = get_addressed_val(addr_mode);
+                let val = get_addressed_val_8(addr_mode);
                 let val = !val;
-                let new_addr = AddrMode::Immediate(val); // value is already dereferenced
+                let new_addr = AddrMode8::Immediate(val); // value is already dereferenced
                 let instruction = Instruction::ADC(new_addr);
                 self.execute_instruction(instruction);
             },
@@ -80,21 +82,21 @@ impl super::CPU {
             //biwise
             Instruction::AND(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val(addr_mode);
+                let val2 = get_addressed_val_8(addr_mode);
                 let result = val1 & val2;
                 self.A = result;
                 update_nz_flags(self, result);
             },
             Instruction::ORA(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val(addr_mode);
+                let val2 = get_addressed_val_8(addr_mode);
                 let result = val1 | val2;
                 self.A = result;
                 update_nz_flags(self, result);
             },
             Instruction::XOR(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val(addr_mode);
+                let val2 = get_addressed_val_8(addr_mode);
                 let result = val1 ^ val2;
                 self.A = result;
                 update_nz_flags(self, result);
@@ -105,6 +107,14 @@ impl super::CPU {
                 let result = val1 & val2;
                 update_nz_flags(self, result);
             },*/
+            //jump
+            Instruction::JMP(addr_mode) => {
+                let val = get_addressed_val_16(addr_mode);
+                let val_hi = val.0;
+                let val_lo = val.1;
+                self.PC_hi = val_hi;
+                self.PC_lo = val_lo;
+            },
             //flags
             Instruction::CLC => {
                 self.C = false;
@@ -133,14 +143,22 @@ impl super::CPU {
     }  
 }
 
-fn get_addressed_val(addr_mode: AddrMode) -> u8 {
+fn get_addressed_val_8(addr_mode: AddrMode8) -> u8 {
     let ret: u8;
     match addr_mode {
-        AddrMode::Immediate(op) => { 
+        AddrMode8::Immediate(op) => { 
             ret = op;
         }
     }
     return ret;
+}
+
+fn get_addressed_val_16(addr_mode: AddrMode16) -> (u8, u8) {
+    return match addr_mode {
+        AddrMode16::Absolute(hi,lo ) => {
+            (hi, lo)
+        }
+    };
 }
 
 fn update_nz_flags(cpu: &mut super::CPU, result: u8) {

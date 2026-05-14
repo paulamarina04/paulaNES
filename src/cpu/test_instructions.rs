@@ -8,7 +8,7 @@
     fn test_lda() {
         let mut cpu: CPU = CPU::new();
         let val: u8 = 0xFF;
-        let addr_mode = AddrMode::Immediate(val);
+        let addr_mode = AddrMode8::Immediate(val);
         cpu.execute_instruction(Instruction::LDA(addr_mode));
         assert_eq!(val, cpu.A, "fail in LDA immediate");
         assert_eq!(false, cpu.Z);
@@ -80,7 +80,7 @@
         cpu.A = 0x00;
         let op = 0x00;
         cpu.C = false;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A);
         assert_eq!(false, cpu.C);
@@ -91,7 +91,7 @@
         cpu.A = 0x00;
         let op = 0x00;
         cpu.C = true;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.A);
         assert_eq!(false, cpu.C);
@@ -102,7 +102,7 @@
         cpu.A = 0x40;
         let op = 0x3F;
         cpu.C = false;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x7F, cpu.A, "0x40 + 0x3F no carry: wrong result");
         assert_eq!(false, cpu.C, "0x40 + 0x3F no carry: wrong carry flag");
@@ -113,7 +113,7 @@
         cpu.A = 0x40;
         let op = 0x40;
         cpu.C = false;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x80, cpu.A, "0x40 + 0x40 no carry: wrong result");
         assert_eq!(false, cpu.C, "0x40 + 0x40 no carry: wrong carry flag");
@@ -124,7 +124,7 @@
         cpu.A = 0x80;
         let op = 0x7F;
         cpu.C = false;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.A, "0x80 + 0x7F no carry: wrong result");
         assert_eq!(false, cpu.C, "0x80 + 0x7F no carry: wrong carry flag");
@@ -135,7 +135,7 @@
         cpu.A = 0x80;
         let op = 0x80;
         cpu.C = false;
-        let instruction = Instruction::ADC(AddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A, "0x80 + 0x80 no carry: wrong result");
         assert_eq!(true, cpu.C, "0x80 + 0x80 no carry: wrong carry flag");
@@ -151,7 +151,7 @@
         cpu.A = 0x02;
         let op = 0x01;
         cpu.C = true;
-        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.A);
         assert_eq!(true, cpu.C);
@@ -162,7 +162,7 @@
         cpu.A = 0x02;
         let op = 0x01;
         cpu.C = false;
-        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A);
         assert_eq!(true, cpu.C);
@@ -173,7 +173,7 @@
         cpu.A = 0x01;
         let op = 0x02;
         cpu.C = true;
-        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.A);
         assert_eq!(false, cpu.C);
@@ -184,7 +184,7 @@
         cpu.A = 0x01;
         let op = 0xFF;
         cpu.C = true;
-        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x02, cpu.A);
         assert_eq!(false, cpu.C);
@@ -195,7 +195,7 @@
         cpu.A = 0xFF;
         let op = 0x01;
         cpu.C = true;
-        let instruction = Instruction::SBC(AddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode8::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFE, cpu.A);
         assert_eq!(true, cpu.C);
@@ -254,7 +254,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::AND(AddrMode::Immediate(val2));
+        let instruction = Instruction::AND(AddrMode8::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b10001000, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -267,7 +267,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::ORA(AddrMode::Immediate(val2));
+        let instruction = Instruction::ORA(AddrMode8::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b11101110, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -280,7 +280,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::XOR(AddrMode::Immediate(val2));
+        let instruction = Instruction::XOR(AddrMode8::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b01100110, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -299,6 +299,22 @@
         assert_eq!(false, cpu.Z);
         assert_eq!(true, cpu.N);
     }*/
+
+    // jump instructions
+
+    #[test]
+    fn test_jmp() {
+        let mut cpu = CPU::new();
+        cpu.PC_hi = 0x00;
+        cpu.PC_lo = 0x00;
+        let val_hi = 0xFF;
+        let val_lo = 0xFF;
+        let addr_mode = AddrMode16::Absolute(val_hi, val_lo);
+        let instruction = Instruction::JMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.PC_lo);
+    }
 
 
 
