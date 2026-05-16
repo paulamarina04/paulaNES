@@ -1,3 +1,5 @@
+use super::memory::SystemBus;
+
 mod instruction_set;
 mod execution;
 #[cfg(test)]
@@ -6,6 +8,7 @@ mod test_instructions;
 
 #[allow(non_snake_case)]
 struct CPU {
+    // internal registers
     A: u8,
     X: u8,
     Y: u8,
@@ -18,12 +21,15 @@ struct CPU {
     D: bool,
     I: bool,
     Z: bool,
-    C: bool 
+    C: bool,
+    // system bus
+    bus: SystemBus
 }
 
 impl CPU {
     fn new() -> Self {
-        let ret= Self {
+        return Self {
+            // internal registers
             A: 0x00,
             X: 0x00,
             Y: 0x00,
@@ -37,8 +43,9 @@ impl CPU {
             I: false,
             Z: false,
             C: false, 
+            // system bus
+            bus: SystemBus::new()
         };
-        return ret;
     }
 }
 
