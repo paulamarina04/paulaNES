@@ -8,7 +8,7 @@
     fn test_lda() {
         let mut cpu: CPU = CPU::new();
         let val: u8 = 0xFF;
-        let addr_mode = ValueAddrMode::Immediate(val);
+        let addr_mode = AddrMode::Immediate(val);
         cpu.execute_instruction(Instruction::LDA(addr_mode));
         assert_eq!(val, cpu.A, "fail in LDA immediate");
         assert_eq!(false, cpu.Z);
@@ -21,7 +21,7 @@
         let addr_hi = 0x00;
         let addr_lo = 0x00;
         cpu.A = 0xFF;
-        let addr_mode = AddressAddrMode::Absolute(addr_hi, addr_lo);
+        let addr_mode = AddrMode::Absolute(addr_hi, addr_lo);
         let instruction = Instruction::STA(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.bus.read(addr_hi, addr_lo));
@@ -92,7 +92,7 @@
         cpu.A = 0x00;
         let op = 0x00;
         cpu.C = false;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A);
         assert_eq!(false, cpu.C);
@@ -103,7 +103,7 @@
         cpu.A = 0x00;
         let op = 0x00;
         cpu.C = true;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.A);
         assert_eq!(false, cpu.C);
@@ -114,7 +114,7 @@
         cpu.A = 0x40;
         let op = 0x3F;
         cpu.C = false;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x7F, cpu.A, "0x40 + 0x3F no carry: wrong result");
         assert_eq!(false, cpu.C, "0x40 + 0x3F no carry: wrong carry flag");
@@ -125,7 +125,7 @@
         cpu.A = 0x40;
         let op = 0x40;
         cpu.C = false;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x80, cpu.A, "0x40 + 0x40 no carry: wrong result");
         assert_eq!(false, cpu.C, "0x40 + 0x40 no carry: wrong carry flag");
@@ -136,7 +136,7 @@
         cpu.A = 0x80;
         let op = 0x7F;
         cpu.C = false;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.A, "0x80 + 0x7F no carry: wrong result");
         assert_eq!(false, cpu.C, "0x80 + 0x7F no carry: wrong carry flag");
@@ -147,7 +147,7 @@
         cpu.A = 0x80;
         let op = 0x80;
         cpu.C = false;
-        let instruction = Instruction::ADC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::ADC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A, "0x80 + 0x80 no carry: wrong result");
         assert_eq!(true, cpu.C, "0x80 + 0x80 no carry: wrong carry flag");
@@ -163,7 +163,7 @@
         cpu.A = 0x02;
         let op = 0x01;
         cpu.C = true;
-        let instruction = Instruction::SBC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.A);
         assert_eq!(true, cpu.C);
@@ -174,7 +174,7 @@
         cpu.A = 0x02;
         let op = 0x01;
         cpu.C = false;
-        let instruction = Instruction::SBC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.A);
         assert_eq!(true, cpu.C);
@@ -185,7 +185,7 @@
         cpu.A = 0x01;
         let op = 0x02;
         cpu.C = true;
-        let instruction = Instruction::SBC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.A);
         assert_eq!(false, cpu.C);
@@ -196,7 +196,7 @@
         cpu.A = 0x01;
         let op = 0xFF;
         cpu.C = true;
-        let instruction = Instruction::SBC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0x02, cpu.A);
         assert_eq!(false, cpu.C);
@@ -207,7 +207,7 @@
         cpu.A = 0xFF;
         let op = 0x01;
         cpu.C = true;
-        let instruction = Instruction::SBC(ValueAddrMode::Immediate(op));
+        let instruction = Instruction::SBC(AddrMode::Immediate(op));
         cpu.execute_instruction(instruction);
         assert_eq!(0xFE, cpu.A);
         assert_eq!(true, cpu.C);
@@ -266,7 +266,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::AND(ValueAddrMode::Immediate(val2));
+        let instruction = Instruction::AND(AddrMode::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b10001000, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -279,7 +279,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::ORA(ValueAddrMode::Immediate(val2));
+        let instruction = Instruction::ORA(AddrMode::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b11101110, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -292,7 +292,7 @@
         let val1: u8 = 0b11001100;
         let val2: u8 = 0b10101010;
         cpu.A = val1;
-        let instruction = Instruction::XOR(ValueAddrMode::Immediate(val2));
+        let instruction = Instruction::XOR(AddrMode::Immediate(val2));
         cpu.execute_instruction(instruction);
         assert_eq!(0b01100110, cpu.A);
         assert_eq!(false, cpu.Z);
@@ -321,7 +321,7 @@
         cpu.PC_lo = 0x00;
         let val_hi = 0xFF;
         let val_lo = 0xFF;
-        let addr_mode = AddressAddrMode::Absolute(val_hi, val_lo);
+        let addr_mode = AddrMode::Absolute(val_hi, val_lo);
         let instruction = Instruction::JMP(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.PC_hi);

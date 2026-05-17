@@ -1,9 +1,6 @@
-use crate::cpu::instruction_set::AddressAddrMode;
-
 use super::instruction_set::Instruction;
-use super::instruction_set::ValueAddrMode;
+use super::instruction_set::AddrMode;
 use std::num::Wrapping;
-use std::ptr::addr_of;
 
 impl super::CPU {
     pub(crate) fn execute_instruction(&mut self, instruction : Instruction) {
@@ -151,26 +148,27 @@ impl super::CPU {
         }
     }  
 
-    fn get_addressed_value(&self, addr_mode: ValueAddrMode) -> u8 {
+    fn get_addressed_value(&self, addr_mode: AddrMode) -> u8 {
         return match addr_mode {
-            ValueAddrMode::Immediate(op) => { 
+            AddrMode::Immediate(op) => { 
                 op
             },
-            ValueAddrMode::Absolute(hi, lo) => {
+            _ => {
+                let (hi, lo) = self.get_addressed_address(addr_mode);
                 self.bus.read(hi, lo)
-            },
-            ValueAddrMode::ZeroPage(lo) => {
-                self.bus.read(0x00, lo)
             }
         };
     }
 
-    fn get_addressed_address(&self, addr_mode: AddressAddrMode) -> (u8, u8) {
+    fn get_addressed_address(&self, addr_mode: AddrMode) -> (u8, u8) {
         return match addr_mode {
-            AddressAddrMode::Absolute(hi,lo ) => {
+            AddrMode::Immediate(_) => {
+                panic!("Attempted to fetch an address using an immediate addressing mode");
+            },
+            AddrMode::Absolute(hi,lo ) => {
                 (hi, lo)
             },
-            AddressAddrMode::ZeroPage(lo) => {
+            AddrMode::ZeroPage(lo) => {
                 (0x00, lo)
             }
         };
@@ -185,8 +183,8 @@ impl super::CPU {
 #[cfg(test)]
 mod test_addressing_modes {
     use crate::cpu::CPU;
-    use crate::cpu::instruction_set::ValueAddrMode as VAM;
-    use crate::cpu::instruction_set::AddressAddrMode as AAM;
+    use crate::cpu::instruction_set::AddrMode as VAM;
+    use crate::cpu::instruction_set::AddrMode as AAM;
 
     // addressed values
 
