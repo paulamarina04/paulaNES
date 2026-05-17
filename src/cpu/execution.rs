@@ -1,7 +1,7 @@
-use crate::cpu::instruction_set::AddrMode16;
+use crate::cpu::instruction_set::AddressAddrMode;
 
 use super::instruction_set::Instruction;
-use super::instruction_set::AddrMode8;
+use super::instruction_set::ValueAddrMode;
 use std::num::Wrapping;
 use std::ptr::addr_of;
 
@@ -10,12 +10,12 @@ impl super::CPU {
         match instruction  {
             //access
             Instruction::LDA(addr_mode) => {
-                let val = get_addressed_val_8(addr_mode);
+                let val = get_addressed_value(addr_mode);
                 self.A = val;
                 update_nz_flags(self, val);
             },
             Instruction::STA(addr_mode) => {
-                let (addr_hi, addr_lo) = get_addressed_val_16(addr_mode);
+                let (addr_hi, addr_lo) = get_addressed_address(addr_mode);
                 let data = self.A;
                 self.bus.write(addr_hi, addr_lo, data);
             }
@@ -47,21 +47,20 @@ impl super::CPU {
             //arithmetic
             Instruction::ADC(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val_8(addr_mode);
+                let val2 = get_addressed_value(addr_mode);
                 let carry = if self.C { 0x01 } else { 0x00 };
                 let result = Wrapping(val1) + Wrapping(val2) + Wrapping(carry);
                 let result: u8 = result.0;
                 self.A = result;
                 // flag bitwise shenanigans
                 self.C = val1 as u16 + val2 as u16 + carry as u16 > 0xFF;
-                self.Z = result == 0x00;
                 self.V = (result ^ val1) & (result ^ val2) & 0b10000000 == 0b10000000;
-                self.N = result & 0b10000000 == 0b10000000;
+                update_nz_flags(self, result);
             },
             Instruction::SBC(addr_mode) => {
-                let val = get_addressed_val_8(addr_mode);
+                let val = get_addressed_value(addr_mode);
                 let val = !val;
-                let new_addr = AddrMode8::Immediate(val); // value is already dereferenced
+                let new_addr = ValueAddrMode::Immediate(val); // value is already dereferenced
                 let instruction = Instruction::ADC(new_addr);
                 self.execute_instruction(instruction);
             },
@@ -88,21 +87,21 @@ impl super::CPU {
             //biwise
             Instruction::AND(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val_8(addr_mode);
+                let val2 = get_addressed_value(addr_mode);
                 let result = val1 & val2;
                 self.A = result;
                 update_nz_flags(self, result);
             },
             Instruction::ORA(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val_8(addr_mode);
+                let val2 = get_addressed_value(addr_mode);
                 let result = val1 | val2;
                 self.A = result;
                 update_nz_flags(self, result);
             },
             Instruction::XOR(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val_8(addr_mode);
+                let val2 = get_addressed_value(addr_mode);
                 let result = val1 ^ val2;
                 self.A = result;
                 update_nz_flags(self, result);
@@ -115,9 +114,7 @@ impl super::CPU {
             },*/
             //jump
             Instruction::JMP(addr_mode) => {
-                let val = get_addressed_val_16(addr_mode);
-                let val_hi = val.0;
-                let val_lo = val.1;
+                let (val_hi, val_lo) = get_addressed_address(addr_mode);
                 self.PC_hi = val_hi;
                 self.PC_lo = val_lo;
             },
@@ -149,19 +146,17 @@ impl super::CPU {
     }  
 }
 
-fn get_addressed_val_8(addr_mode: AddrMode8) -> u8 {
-    let ret: u8;
-    match addr_mode {
-        AddrMode8::Immediate(op) => { 
-            ret = op;
+fn get_addressed_value(addr_mode: ValueAddrMode) -> u8 {
+    return match addr_mode {
+        ValueAddrMode::Immediate(op) => { 
+            op
         }
     }
-    return ret;
 }
 
-fn get_addressed_val_16(addr_mode: AddrMode16) -> (u8, u8) {
+fn get_addressed_address(addr_mode: AddressAddrMode) -> (u8, u8) {
     return match addr_mode {
-        AddrMode16::Absolute(hi,lo ) => {
+        AddressAddrMode::Absolute(hi,lo ) => {
             (hi, lo)
         }
     };

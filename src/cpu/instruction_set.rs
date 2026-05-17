@@ -1,24 +1,24 @@
 pub enum Instruction {
     //access
-    LDA(AddrMode8), STA(AddrMode16),
+    LDA(ValueAddrMode), STA(AddressAddrMode),
     //transfer
     TAX, TXA, TAY, TYA, TXS, TSX,
     //arithmetic
-    ADC(AddrMode8), SBC(AddrMode8), INX, DEX, INY, DEY,
+    ADC(ValueAddrMode), SBC(ValueAddrMode), INX, DEX, INY, DEY,
     //bitwise
-    AND(AddrMode8), ORA(AddrMode8), XOR(AddrMode8), /*BIT(AddrMode),*/
+    AND(ValueAddrMode), ORA(ValueAddrMode), XOR(ValueAddrMode), /*BIT(AddrMode),*/
     // jump
-    JMP(AddrMode16),
+    JMP(AddressAddrMode),
     //flags
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other
     NOP
 }
 
-pub enum AddrMode8 {
+pub enum ValueAddrMode {
     Immediate(u8)
 }
 
-pub enum AddrMode16 {
+pub enum AddressAddrMode {
     Absolute(u8, u8)
 }
