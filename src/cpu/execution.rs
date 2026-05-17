@@ -58,11 +58,17 @@ impl super::CPU {
                 update_nz_flags(self, result);
             },
             Instruction::SBC(addr_mode) => {
-                let val = get_addressed_value(addr_mode);
-                let val = !val;
-                let new_addr = ValueAddrMode::Immediate(val); // value is already dereferenced
-                let instruction = Instruction::ADC(new_addr);
-                self.execute_instruction(instruction);
+                let val1 = self.A;
+                let val2 = get_addressed_value(addr_mode);
+                let val2 = !val2; // only change from ADC
+                let carry = if self.C { 0x01 } else { 0x00 };
+                let result = Wrapping(val1) + Wrapping(val2) + Wrapping(carry);
+                let result: u8 = result.0;
+                self.A = result;
+                // flag bitwise shenanigans
+                self.C = val1 as u16 + val2 as u16 + carry as u16 > 0xFF;
+                self.V = (result ^ val1) & (result ^ val2) & 0b10000000 == 0b10000000;
+                update_nz_flags(self, result);
             },
             Instruction::INX => {
                 let result = self.X + 1;
