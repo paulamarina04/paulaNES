@@ -158,6 +158,9 @@ impl super::CPU {
             },
             ValueAddrMode::Absolute(hi, lo) => {
                 self.bus.read(hi, lo)
+            },
+            ValueAddrMode::ZeroPage(lo) => {
+                self.bus.read(0x00, lo)
             }
         };
     }
@@ -166,6 +169,9 @@ impl super::CPU {
         return match addr_mode {
             AddressAddrMode::Absolute(hi,lo ) => {
                 (hi, lo)
+            },
+            AddressAddrMode::ZeroPage(lo) => {
+                (0x00, lo)
             }
         };
     }
@@ -191,6 +197,7 @@ mod test_addressing_modes {
         let addr_mode = VAM::Immediate(val);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
     }
+
     #[test]
     fn test_absolute_val() {
         let mut cpu = CPU::new();
@@ -199,6 +206,17 @@ mod test_addressing_modes {
         let val = 0xFF;
         cpu.bus.write(hi, lo, val);
         let addr_mode = VAM::Absolute(hi, lo);
+        assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+    }
+    
+    #[test]
+    fn test_zero_page_value() {
+        let mut cpu = CPU::new();
+        let hi = 0x00;
+        let lo = 0x80;
+        let val = 0xFF;
+        cpu.bus.write(hi, lo, val);
+        let addr_mode = VAM::ZeroPage(lo);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
     }
 
@@ -211,5 +229,13 @@ mod test_addressing_modes {
         let lo = 0x01;
         let addr_mode = AAM::Absolute(hi, lo);
         assert_eq!((0x80, 0x01), cpu.get_addressed_address(addr_mode));
+    }
+
+    #[test]
+    fn test_zero_page_address() {
+        let cpu = CPU::new();
+        let lo = 0x80;
+        let addr_mode = AAM::ZeroPage(lo);
+        assert_eq!((0x0, 0x80), cpu.get_addressed_address(addr_mode));
     }
 }
