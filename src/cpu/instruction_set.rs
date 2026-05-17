@@ -16,7 +16,8 @@ pub enum Instruction {
 }
 
 pub enum ValueAddrMode {
-    Immediate(u8)
+    Immediate(u8),
+    Absolute(u8, u8)
 }
 
 pub enum AddressAddrMode {

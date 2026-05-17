@@ -155,8 +155,11 @@ impl super::CPU {
         return match addr_mode {
             ValueAddrMode::Immediate(op) => { 
                 op
+            },
+            ValueAddrMode::Absolute(hi, lo) => {
+                self.bus.read(hi, lo)
             }
-        }
+        };
     }
 
     fn get_addressed_address(&self, addr_mode: AddressAddrMode) -> (u8, u8) {
@@ -188,15 +191,25 @@ mod test_addressing_modes {
         let addr_mode = VAM::Immediate(val);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
     }
+    #[test]
+    fn test_absolute_val() {
+        let mut cpu = CPU::new();
+        let hi = 0x80;
+        let lo = 0x01;
+        let val = 0xFF;
+        cpu.bus.write(hi, lo, val);
+        let addr_mode = VAM::Absolute(hi, lo);
+        assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+    }
 
     // addressed addresses
 
     #[test]
     fn test_absolute_address() {
         let cpu = CPU::new();
-        let val1 = 0xFF;
-        let val2 = 0x80;
-        let addr_mode = AAM::Absolute(val1, val2);
-        assert_eq!((0xFF, 0x80), cpu.get_addressed_address(addr_mode));
+        let hi = 0x80;
+        let lo = 0x01;
+        let addr_mode = AAM::Absolute(hi, lo);
+        assert_eq!((0x80, 0x01), cpu.get_addressed_address(addr_mode));
     }
 }
