@@ -15,6 +15,18 @@
         assert_eq!(true, cpu.N);
     }
 
+    #[test]
+    fn test_sta() {
+        let mut cpu: CPU = CPU::new();
+        let addr_hi = 0x00;
+        let addr_lo = 0x00;
+        cpu.A = 0xFF;
+        let addr_mode = AddrMode16::Absolute(addr_hi, addr_lo);
+        let instruction = Instruction::STA(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.bus.read(addr_hi, addr_lo));
+    }
+
     // transfer instructions
 
     #[test]

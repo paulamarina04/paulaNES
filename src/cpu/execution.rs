@@ -3,6 +3,7 @@ use crate::cpu::instruction_set::AddrMode16;
 use super::instruction_set::Instruction;
 use super::instruction_set::AddrMode8;
 use std::num::Wrapping;
+use std::ptr::addr_of;
 
 impl super::CPU {
     pub(crate) fn execute_instruction(&mut self, instruction : Instruction) {
@@ -13,6 +14,11 @@ impl super::CPU {
                 self.A = val;
                 update_nz_flags(self, val);
             },
+            Instruction::STA(addr_mode) => {
+                let (addr_hi, addr_lo) = get_addressed_val_16(addr_mode);
+                let data = self.A;
+                self.bus.write(addr_hi, addr_lo, data);
+            }
             //transfer
             Instruction::TAX => {
                 let val = self.A;
