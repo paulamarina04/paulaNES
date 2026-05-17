@@ -172,3 +172,31 @@ impl super::CPU {
         self.N = result & 0x80 == 0x80;
     }
 }
+
+#[cfg(test)]
+mod test_addressing_modes {
+    use crate::cpu::CPU;
+    use crate::cpu::instruction_set::ValueAddrMode as VAM;
+    use crate::cpu::instruction_set::AddressAddrMode as AAM;
+
+    // addressed values
+
+    #[test]
+    fn test_immediate_val() {
+        let cpu = CPU::new();
+        let val = 0xFF;
+        let addr_mode = VAM::Immediate(val);
+        assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+    }
+
+    // addressed addresses
+
+    #[test]
+    fn test_absolute_address() {
+        let cpu = CPU::new();
+        let val1 = 0xFF;
+        let val2 = 0x80;
+        let addr_mode = AAM::Absolute(val1, val2);
+        assert_eq!((0xFF, 0x80), cpu.get_addressed_address(addr_mode));
+    }
+}
