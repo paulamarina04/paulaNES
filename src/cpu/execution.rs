@@ -168,6 +168,24 @@ impl super::CPU {
             AddrMode::Absolute(hi,lo ) => {
                 (hi, lo)
             },
+            AddrMode::AbsoluteIndexedX(hi,lo ) => {
+                let indexed_lo = (Wrapping(lo) + Wrapping(self.X)).0;
+                let mut indexed_hi = hi;
+                if lo > indexed_lo { 
+                    // page crossed
+                    indexed_hi = (Wrapping(hi) + Wrapping(1)).0;
+                }
+                (indexed_hi, indexed_lo)
+            },
+            AddrMode::AbsoluteIndexedY(hi,lo ) => {
+                let indexed_lo = (Wrapping(lo) + Wrapping(self.Y)).0;
+                let mut indexed_hi = hi;
+                if lo > indexed_lo { 
+                    // page crossed
+                    indexed_hi = (Wrapping(hi) + Wrapping(1)).0;
+                }
+                (indexed_hi, indexed_lo)
+            },
             AddrMode::ZeroPage(lo) => {
                 (0x00, lo)
             }
@@ -183,8 +201,7 @@ impl super::CPU {
 #[cfg(test)]
 mod test_addressing_modes {
     use crate::cpu::CPU;
-    use crate::cpu::instruction_set::AddrMode as VAM;
-    use crate::cpu::instruction_set::AddrMode as AAM;
+    use crate::cpu::instruction_set::AddrMode;
 
     // addressed values
 
@@ -192,7 +209,7 @@ mod test_addressing_modes {
     fn test_immediate_val() {
         let cpu = CPU::new();
         let val = 0xFF;
-        let addr_mode = VAM::Immediate(val);
+        let addr_mode = AddrMode::Immediate(val);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
     }
 
@@ -203,8 +220,66 @@ mod test_addressing_modes {
         let lo = 0x01;
         let val = 0xFF;
         cpu.bus.write(hi, lo, val);
-        let addr_mode = VAM::Absolute(hi, lo);
+        let addr_mode = AddrMode::Absolute(hi, lo);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+    }
+    
+    #[test]
+    fn test_absolute_indexed_x_value() {
+        let mut cpu = CPU::new();
+        // no page cross
+        let hi = 0x80;
+        let lo = 0x01;
+        let val = 0xFF;
+        cpu.X = 0x80;
+        cpu.bus.write(hi, 0x81, val);
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+        // page crossed
+        let hi = 0x80;
+        let lo = 0x80;
+        let val = 0xFE;
+        cpu.X = 0xFF;
+        cpu.bus.write(0x81, 0x7F, val);
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!(0xFE, cpu.get_addressed_value(addr_mode));
+        // page wrap
+        let hi = 0xFF;
+        let lo = 0xFF;
+        let val = 0xFD;
+        cpu.X = 0x01;
+        cpu.bus.write(0x00, 0x00, val);
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!(0xFD, cpu.get_addressed_value(addr_mode));
+    }
+    
+    #[test]
+    fn test_absolute_indexed_y_value() {
+        let mut cpu = CPU::new();
+        // no page cross
+        let hi = 0x80;
+        let lo = 0x01;
+        let val = 0xFF;
+        cpu.Y = 0x80;
+        cpu.bus.write(hi, 0x81, val);
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
+        // page crossed
+        let hi = 0x80;
+        let lo = 0x80;
+        let val = 0xFE;
+        cpu.Y = 0xFF;
+        cpu.bus.write(0x81, 0x7F, val);
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!(0xFE, cpu.get_addressed_value(addr_mode));
+        // page wrap
+        let hi = 0xFF;
+        let lo = 0xFF;
+        let val = 0xFD;
+        cpu.Y = 0x01;
+        cpu.bus.write(0x00, 0x00, val);
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!(0xFD, cpu.get_addressed_value(addr_mode));
     }
     
     #[test]
@@ -214,7 +289,7 @@ mod test_addressing_modes {
         let lo = 0x80;
         let val = 0xFF;
         cpu.bus.write(hi, lo, val);
-        let addr_mode = VAM::ZeroPage(lo);
+        let addr_mode = AddrMode::ZeroPage(lo);
         assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
     }
 
@@ -225,15 +300,61 @@ mod test_addressing_modes {
         let cpu = CPU::new();
         let hi = 0x80;
         let lo = 0x01;
-        let addr_mode = AAM::Absolute(hi, lo);
+        let addr_mode = AddrMode::Absolute(hi, lo);
         assert_eq!((0x80, 0x01), cpu.get_addressed_address(addr_mode));
+    }
+
+    #[test]
+    fn test_absolute_indexed_x_address() {
+        let mut cpu = CPU::new();
+        // no page cross
+        let hi = 0x80;
+        let lo = 0x01;
+        cpu.X = 0x80;
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!((0x80, 0x81), cpu.get_addressed_address(addr_mode));
+        // page crossed
+        let hi = 0x80;
+        let lo = 0x80;
+        cpu.X = 0xFF;
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!((0x81, 0x7F), cpu.get_addressed_address(addr_mode));
+        // page wrap
+        let hi = 0xFF;
+        let lo = 0xFF;
+        cpu.X = 0x01;
+        let addr_mode = AddrMode::AbsoluteIndexedX(hi, lo);
+        assert_eq!((0x00, 0x00), cpu.get_addressed_address(addr_mode));
+    }
+
+    #[test]
+    fn test_absolute_indexed_y_address() {
+        let mut cpu = CPU::new();
+        // no page cross
+        let hi = 0x80;
+        let lo = 0x01;
+        cpu.Y = 0x80;
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!((0x80, 0x81), cpu.get_addressed_address(addr_mode));
+        // page crossed
+        let hi = 0x80;
+        let lo = 0x80;
+        cpu.Y = 0xFF;
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!((0x81, 0x7F), cpu.get_addressed_address(addr_mode));
+        // page wrap
+        let hi = 0xFF;
+        let lo = 0xFF;
+        cpu.Y = 0x01;
+        let addr_mode = AddrMode::AbsoluteIndexedY(hi, lo);
+        assert_eq!((0x00, 0x00), cpu.get_addressed_address(addr_mode));
     }
 
     #[test]
     fn test_zero_page_address() {
         let cpu = CPU::new();
         let lo = 0x80;
-        let addr_mode = AAM::ZeroPage(lo);
+        let addr_mode = AddrMode::ZeroPage(lo);
         assert_eq!((0x0, 0x80), cpu.get_addressed_address(addr_mode));
     }
 }
