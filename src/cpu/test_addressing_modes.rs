@@ -112,6 +112,27 @@ fn test_zero_page_indexed_x_value() {
     assert_eq!(0xFC, cpu.get_addressed_value(addr_mode));
 }
 
+#[test]
+fn test_zero_page_indexed_y_value() {
+    let mut cpu = CPU::new();
+    // no page wrap
+    let hi = 0x00;
+    let lo = 0x80;
+    let val = 0xFD;
+    cpu.Y = 0x7F;
+    cpu.bus.write(hi, 0xFF, val);
+    let addr_mode = AddrMode::ZeroPageIndexedY(lo);
+    assert_eq!(0xFD, cpu.get_addressed_value(addr_mode));
+    // page wrap
+    let hi = 0x00;
+    let lo = 0xFF;
+    let val = 0xFC;
+    cpu.Y = 0x01;
+    cpu.bus.write(hi, 0x00, val);
+    let addr_mode = AddrMode::ZeroPageIndexedY(lo);
+    assert_eq!(0xFC, cpu.get_addressed_value(addr_mode));
+}
+
 // addressed addresses
 
 #[test]
@@ -190,4 +211,44 @@ fn test_zero_page_indexed_x_address() {
     cpu.X = 0x01;
     let addr_mode = AddrMode::ZeroPageIndexedX(lo);
     assert_eq!((0x0, 0x00), cpu.get_addressed_address(addr_mode));
+}
+
+#[test]
+fn test_zero_page_indexed_y_address() {
+    let mut cpu = CPU::new();
+    // no page wrap
+    let lo = 0x80;
+    cpu.Y = 0x7F;
+    let addr_mode = AddrMode::ZeroPageIndexedY(lo);
+    assert_eq!((0x0, 0xFF), cpu.get_addressed_address(addr_mode));
+    // page wrap
+    let lo = 0xFF;
+    cpu.Y = 0x01;
+    let addr_mode = AddrMode::ZeroPageIndexedY(lo);
+    assert_eq!((0x0, 0x00), cpu.get_addressed_address(addr_mode));
+}
+
+#[test]
+fn test_indirect_address() {
+    let mut cpu = CPU::new();
+    // no page cross
+    let hi = 0x80;
+    let lo = 0x01;
+    let val1 = 0xFF; // low byte
+    let val2 = 0xFE; // high byte
+    cpu.bus.write(hi, lo, val1);
+    cpu.bus.write(hi, lo + 1, val2);
+    let addr_mode = AddrMode::Indirect(hi, lo);
+    assert_eq!((0xFE, 0xFF), cpu.get_addressed_address(addr_mode));
+    // page cross bug
+    let hi = 0x80;
+    let lo = 0xFF;
+    let val1 = 0xFD; // low byte
+    let val2 = 0xFC; // actual high byte fetched
+    let val3 = 0xFB; // expected high byte if not accounting for the bug
+    cpu.bus.write(hi, lo, val1);
+    cpu.bus.write(0x80, 0x00, val2);
+    cpu.bus.write(0x81, 0x00, val3);
+    let addr_mode = AddrMode::Indirect(hi, lo);
+    assert_eq!((0xFC, 0xFD), cpu.get_addressed_address(addr_mode));
 }

@@ -150,6 +150,9 @@ impl super::CPU {
 
     pub(crate) fn get_addressed_value(&self, addr_mode: AddrMode) -> u8 {
         return match addr_mode {
+            AddrMode::Indirect(..) => {
+                panic!("Attempted to fetch a value using a plain indirect addressing mode");
+            }
             AddrMode::Immediate(op) => { 
                 op
             },
@@ -162,7 +165,7 @@ impl super::CPU {
 
     pub(crate) fn get_addressed_address(&self, addr_mode: AddrMode) -> (u8, u8) {
         return match addr_mode {
-            AddrMode::Immediate(_) => {
+            AddrMode::Immediate(..) => {
                 panic!("Attempted to fetch an address using an immediate addressing mode");
             },
             AddrMode::Absolute(hi,lo ) => {
@@ -192,6 +195,16 @@ impl super::CPU {
             AddrMode::ZeroPageIndexedX(lo) => {
                 let indexed_lo = (Wrapping(lo) + Wrapping(self.X)).0;
                 (0x00, indexed_lo)
+            },
+            AddrMode::ZeroPageIndexedY(lo) => {
+                let indexed_lo = (Wrapping(lo) + Wrapping(self.Y)).0;
+                (0x00, indexed_lo)
+            },
+            AddrMode::Indirect(hi, lo) => {
+                let indirect_lo = self.bus.read(hi, lo); // little endian; low byte first
+                let next_lo = (Wrapping(lo) + Wrapping(1)).0;
+                let indirect_hi = self.bus.read(hi, next_lo); // cpu doesnt check for page cross!!!
+                (indirect_hi, indirect_lo)
             }
         };
     }
