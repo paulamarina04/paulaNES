@@ -2,8 +2,11 @@ use super::memory::SystemBus;
 
 mod instruction_set;
 mod execution;
+
 #[cfg(test)]
 mod test_instructions;
+#[cfg(test)]
+mod test_addressing_modes;
 
 
 #[allow(non_snake_case)]
