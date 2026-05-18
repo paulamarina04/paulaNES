@@ -188,6 +188,10 @@ impl super::CPU {
             },
             AddrMode::ZeroPage(lo) => {
                 (0x00, lo)
+            },
+            AddrMode::ZeroPageIndexedX(lo) => {
+                let indexed_lo = (Wrapping(lo) + Wrapping(self.X)).0;
+                (0x00, indexed_lo)
             }
         };
     }

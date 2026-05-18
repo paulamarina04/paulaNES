@@ -91,6 +91,27 @@ fn test_zero_page_value() {
     assert_eq!(0xFF, cpu.get_addressed_value(addr_mode));
 }
 
+#[test]
+fn test_zero_page_indexed_x_value() {
+    let mut cpu = CPU::new();
+    // no page wrap
+    let hi = 0x00;
+    let lo = 0x80;
+    let val = 0xFD;
+    cpu.X = 0x7F;
+    cpu.bus.write(hi, 0xFF, val);
+    let addr_mode = AddrMode::ZeroPageIndexedX(lo);
+    assert_eq!(0xFD, cpu.get_addressed_value(addr_mode));
+    // page wrap
+    let hi = 0x00;
+    let lo = 0xFF;
+    let val = 0xFC;
+    cpu.X = 0x01;
+    cpu.bus.write(hi, 0x00, val);
+    let addr_mode = AddrMode::ZeroPageIndexedX(lo);
+    assert_eq!(0xFC, cpu.get_addressed_value(addr_mode));
+}
+
 // addressed addresses
 
 #[test]
@@ -154,4 +175,19 @@ fn test_zero_page_address() {
     let lo = 0x80;
     let addr_mode = AddrMode::ZeroPage(lo);
     assert_eq!((0x0, 0x80), cpu.get_addressed_address(addr_mode));
+}
+
+#[test]
+fn test_zero_page_indexed_x_address() {
+    let mut cpu = CPU::new();
+    // no page wrap
+    let lo = 0x80;
+    cpu.X = 0x7F;
+    let addr_mode = AddrMode::ZeroPageIndexedX(lo);
+    assert_eq!((0x0, 0xFF), cpu.get_addressed_address(addr_mode));
+    // page wrap
+    let lo = 0xFF;
+    cpu.X = 0x01;
+    let addr_mode = AddrMode::ZeroPageIndexedX(lo);
+    assert_eq!((0x0, 0x00), cpu.get_addressed_address(addr_mode));
 }
