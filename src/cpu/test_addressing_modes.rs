@@ -1,6 +1,27 @@
 use crate::cpu::CPU;
 use crate::cpu::instruction_set::AddrMode;
 
+// panic scenarios
+
+#[test]
+#[should_panic(expected = "Attempted to fetch an address using an immediate addressing mode")]
+fn test_immediate_address() {
+    let cpu = CPU::new();
+    let val = 0xFF;
+    let addr_mode = AddrMode::Immediate(val);
+    cpu.get_addressed_address(addr_mode);
+}
+
+#[test]
+#[should_panic(expected = "Attempted to fetch a value using a plain indirect addressing mode")]
+fn test_indirect_value() {
+    let cpu = CPU::new();
+    let hi = 0x00;
+    let lo = 0x00;
+    let addr_mode = AddrMode::Indirect(hi, lo);
+    cpu.get_addressed_value(addr_mode);
+}
+
 // addressed values
 
 #[test]
