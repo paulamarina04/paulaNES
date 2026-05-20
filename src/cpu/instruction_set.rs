@@ -9,6 +9,8 @@ pub enum Instruction {
     AND(AddrMode), ORA(AddrMode), XOR(AddrMode), /*BIT(AddrMode),*/
     // jump
     JMP(AddrMode),
+    // stack
+    PHA,
     //flags
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other

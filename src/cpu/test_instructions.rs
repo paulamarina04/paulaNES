@@ -329,6 +329,27 @@
     }
 
 
+    // stack intructions
+
+    #[test]
+    fn test_pha() {
+        let mut cpu = CPU::new();
+        cpu.A = 0xFF;
+        cpu.S = 0x80;
+        let instruction = Instruction::PHA;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.bus.read(0x01, 0x80));
+        assert_eq!(0x7F, cpu.S);
+        // stack overflow
+        cpu.A = 0xFE;
+        cpu.S = 0x00;
+        let instruction = Instruction::PHA;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFE, cpu.bus.read(0x01, 0x00));
+        assert_eq!(0xFF, cpu.S);
+    }
+
+
 
     // flag instructions
 

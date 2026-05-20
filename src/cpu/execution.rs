@@ -115,13 +115,21 @@ impl super::CPU {
                 let result = val1 & val2;
                 update_nz_flags(self, result);
             },*/
-            //jump
+            // jump
             Instruction::JMP(addr_mode) => {
                 let (val_hi, val_lo) = self.get_addressed_address(addr_mode);
                 self.PC_hi = val_hi;
                 self.PC_lo = val_lo;
             },
-            //flags
+            // stack
+            Instruction::PHA => {
+                let val = self.A;
+                let addr_lo = self.S;
+                let addr_hi = 0x01;
+                self.bus.write(addr_hi, addr_lo, val);
+                self.S = (Wrapping(self.S) - Wrapping(1)).0;
+            }
+            // flags
             Instruction::CLC => {
                 self.C = false;
             },
