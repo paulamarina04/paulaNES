@@ -374,6 +374,89 @@
         assert_eq!(true, cpu.N);
     }
 
+    #[test]
+    fn test_php() {
+        let mut cpu = CPU::new();
+        // n bit
+        cpu.N = true;
+        cpu.V = false;
+        cpu.D = false;
+        cpu.I = false;
+        cpu.Z = false;
+        cpu.C = false;
+        cpu.S = 0x80;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b10110000, cpu.bus.read(0x01, 0x80));
+        assert_eq!(0x7F, cpu.S);
+        // v bit
+        cpu.N = false;
+        cpu.V = true;
+        cpu.D = false;
+        cpu.I = false;
+        cpu.Z = false;
+        cpu.C = false;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01110000, cpu.bus.read(0x01, 0x7F));
+        assert_eq!(0x7E, cpu.S);
+        // d bit
+        cpu.N = false;
+        cpu.V = false;
+        cpu.D = true;
+        cpu.I = false;
+        cpu.Z = false;
+        cpu.C = false;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00111000, cpu.bus.read(0x01, 0x7E));
+        assert_eq!(0x7D, cpu.S);
+        // i bit
+        cpu.N = false;
+        cpu.V = false;
+        cpu.D = false;
+        cpu.I = true;
+        cpu.Z = false;
+        cpu.C = false;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00110100, cpu.bus.read(0x01, 0x7D));
+        assert_eq!(0x7C, cpu.S);
+        // z bit
+        cpu.N = false;
+        cpu.V = false;
+        cpu.D = false;
+        cpu.I = false;
+        cpu.Z = true;
+        cpu.C = false;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00110010, cpu.bus.read(0x01, 0x7C));
+        assert_eq!(0x7B, cpu.S);
+        // c bit
+        cpu.N = false;
+        cpu.V = false;
+        cpu.D = false;
+        cpu.I = false;
+        cpu.Z = false;
+        cpu.C = true;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00110001, cpu.bus.read(0x01, 0x7B));
+        assert_eq!(0x7A, cpu.S);
+        // all bits set
+        cpu.N = true;
+        cpu.V = true;
+        cpu.D = true;
+        cpu.I = true;
+        cpu.Z = true;
+        cpu.C = true;
+        let instruction = Instruction::PHP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11111111, cpu.bus.read(0x01, 0x7A));
+        assert_eq!(0x79, cpu.S);
+    }
+
 
 
     // flag instructions

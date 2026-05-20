@@ -137,6 +137,21 @@ impl super::CPU {
                 self.A = popped_val;
                 self.update_nz_flags(popped_val);            
             },
+            Instruction::PHP => {
+                let n_bit = if self.N { 0x80 } else { 0x00 };
+                let v_bit = if self.V { 0x40 } else { 0x00 };
+                let extra_and_b_bits = 0x30;
+                let d_bit = if self.D { 0x08 } else { 0x00 };
+                let i_bit = if self.I { 0x04 } else { 0x00 };
+                let z_bit = if self.Z { 0x02 } else { 0x00 };
+                let c_bit = if self.C { 0x01 } else { 0x00 };
+                let pushed_val = n_bit | v_bit | extra_and_b_bits | d_bit | i_bit | z_bit | c_bit;
+
+                let addr_lo = self.S;
+                let addr_hi = 0x01;
+                self.bus.write(addr_hi, addr_lo, pushed_val);
+                self.S = (Wrapping(self.S) - Wrapping(1)).0;
+            },
             // flags
             Instruction::CLC => {
                 self.C = false;
