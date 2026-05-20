@@ -457,6 +457,95 @@
         assert_eq!(0x79, cpu.S);
     }
 
+    #[test]
+    fn test_plp() {
+        let mut cpu = CPU::new();
+        // n bit
+        cpu.S = 0x80;
+        let val = 0b10110000;
+        cpu.bus.write(0x01, 0x81, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(0x81, cpu.S);
+        // v bit
+        let val = 0b01110000;
+        cpu.bus.write(0x01, 0x82, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.N);
+        assert_eq!(true, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(0x82, cpu.S);
+        // d bit
+        let val = 0b00111000;
+        cpu.bus.write(0x01, 0x83, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(true, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(0x83, cpu.S);
+        // i bit
+        let val = 0b00110100;
+        cpu.bus.write(0x01, 0x84, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(true, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(0x84, cpu.S);
+        // z bit
+        let val = 0b00110010;
+        cpu.bus.write(0x01, 0x85, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(0x85, cpu.S);
+        // c bit
+        let val = 0b00110001;
+        cpu.bus.write(0x01, 0x86, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(0x86, cpu.S);
+        // all bits set
+        let val = 0b11111111;
+        cpu.bus.write(0x01, 0x87, val);
+        let instruction = Instruction::PLP;
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.N);
+        assert_eq!(true, cpu.V);
+        assert_eq!(true, cpu.D);
+        assert_eq!(true, cpu.I);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(0x87, cpu.S);
+    }
 
 
     // flag instructions

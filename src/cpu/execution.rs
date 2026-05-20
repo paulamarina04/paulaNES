@@ -152,6 +152,25 @@ impl super::CPU {
                 self.bus.write(addr_hi, addr_lo, pushed_val);
                 self.S = (Wrapping(self.S) - Wrapping(1)).0;
             },
+            Instruction::PLP => {
+                self.S = (Wrapping(self.S) + Wrapping(1)).0;
+                let addr_lo = self.S;
+                let addr_hi = 0x01;
+                let popped_val = self.bus.read(addr_hi, addr_lo);
+
+                let n_bit = popped_val & 0x80;
+                let v_bit = popped_val & 0x40;
+                let d_bit = popped_val & 0x08;
+                let i_bit = popped_val & 0x04;
+                let z_bit = popped_val & 0x02;
+                let c_bit = popped_val & 0x01; 
+                self.N = n_bit != 0x00;  
+                self.V = v_bit != 0x00;  
+                self.D = d_bit != 0x00;  
+                self.I = i_bit != 0x00;  
+                self.Z = z_bit != 0x00;  
+                self.C = c_bit != 0x00;       
+            },
             // flags
             Instruction::CLC => {
                 self.C = false;
