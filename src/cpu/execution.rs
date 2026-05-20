@@ -212,6 +212,20 @@ impl super::CPU {
                 let indirect_lo = self.bus.read(0x00, indexed_lo);
                 let indirect_hi = self.bus.read(0x00, indexed_lo_next);
                 (indirect_hi, indirect_lo) 
+            },
+            AddrMode::IndirectIndexed(lo) => {
+                let lo_next = (Wrapping(lo) + Wrapping(1)).0;
+                let indirect_lo = self.bus.read(0x00, lo);
+                let indirect_hi = self.bus.read(0x00, lo_next);
+
+                let indexed_lo = (Wrapping(indirect_lo) + Wrapping(self.Y)).0;
+                let indexed_hi = if indirect_lo > indexed_lo { 
+                    (Wrapping(indirect_hi) + Wrapping(1)).0 // page cross
+                } else {
+                    indirect_hi
+                };
+
+                (indexed_hi, indexed_lo)
             }
         };
     }
