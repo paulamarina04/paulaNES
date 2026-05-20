@@ -38,7 +38,7 @@ impl CPU {
             Y: 0x00,
             PC_hi: 0x00,
             PC_lo: 0x00,
-            S: 0x00, 
+            S: 0xFF, 
             // processor flags
             N: false,
             V: false,
