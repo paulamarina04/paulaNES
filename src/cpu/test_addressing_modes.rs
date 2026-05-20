@@ -273,3 +273,35 @@ fn test_indirect_address() {
     let addr_mode = AddrMode::Indirect(hi, lo);
     assert_eq!((0xFC, 0xFD), cpu.get_addressed_address(addr_mode));
 }
+
+#[test]
+fn test_indexed_indirect_address() {
+    let mut cpu = CPU::new();
+    // no page wrap
+    let lo = 0x80;
+    cpu.X = 0x0F;
+    let val1 = 0xFF;
+    let val2 = 0xFE;
+    cpu.bus.write(0x00, 0x8F, val1);
+    cpu.bus.write(0x00, 0x90, val2);
+    let addr_mode = AddrMode::IndexedIndirect(lo);
+    assert_eq!((0xFE, 0xFF), cpu.get_addressed_address(addr_mode));
+    // page wrap when indexing
+    let lo = 0xFF;
+    cpu.X = 0x01;
+    let val1 = 0xFD;
+    let val2 = 0xFC;
+    cpu.bus.write(0x00, 0x00, val1);
+    cpu.bus.write(0x00, 0x01, val2);
+    let addr_mode = AddrMode::IndexedIndirect(lo);
+    assert_eq!((0xFC, 0xFD), cpu.get_addressed_address(addr_mode));
+    // page wrap when fetching high byte
+    let lo = 0x80;
+    cpu.X = 0x7F;
+    let val1 = 0xFB;
+    let val2 = 0xFA;
+    cpu.bus.write(0x00, 0xFF, val1);
+    cpu.bus.write(0x00, 0x00, val2);
+    let addr_mode = AddrMode::IndexedIndirect(lo);
+    assert_eq!((0xFA, 0xFB), cpu.get_addressed_address(addr_mode));
+}

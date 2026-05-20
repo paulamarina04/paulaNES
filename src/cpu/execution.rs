@@ -205,6 +205,13 @@ impl super::CPU {
                 let next_lo = (Wrapping(lo) + Wrapping(1)).0;
                 let indirect_hi = self.bus.read(hi, next_lo); // cpu doesnt check for page cross!!!
                 (indirect_hi, indirect_lo)
+            },
+            AddrMode::IndexedIndirect(lo) => {
+                let indexed_lo = (Wrapping(lo) + Wrapping(self.X)).0;
+                let indexed_lo_next = (Wrapping(indexed_lo) + Wrapping(1)).0;
+                let indirect_lo = self.bus.read(0x00, indexed_lo);
+                let indirect_hi = self.bus.read(0x00, indexed_lo_next);
+                (indirect_hi, indirect_lo) 
             }
         };
     }

@@ -23,5 +23,6 @@ pub enum AddrMode {
     ZeroPage(u8),
     ZeroPageIndexedX(u8),
     ZeroPageIndexedY(u8),
-    Indirect(u8, u8)
+    Indirect(u8, u8),
+    IndexedIndirect(u8)
 }
