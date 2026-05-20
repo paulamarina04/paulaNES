@@ -349,6 +349,31 @@
         assert_eq!(0xFF, cpu.S);
     }
 
+    #[test]
+    fn test_pla() {
+        let mut cpu = CPU::new();
+        cpu.A = 0x00;
+        cpu.S = 0x80;
+        let val = 0xFF;
+        cpu.bus.write(0x01, 0x81, val);
+        let instruction = Instruction::PLA;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.A);
+        assert_eq!(0x81, cpu.S);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+        // stack underflow
+        cpu.S = 0xFF;
+        let val = 0xFE;
+        cpu.bus.write(0x01, 0x00, val);
+        let instruction = Instruction::PLA;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFE, cpu.A);
+        assert_eq!(0x00, cpu.S);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
 
 
     // flag instructions

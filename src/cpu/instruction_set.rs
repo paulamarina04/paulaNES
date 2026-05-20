@@ -10,7 +10,7 @@ pub enum Instruction {
     // jump
     JMP(AddrMode),
     // stack
-    PHA,
+    PHA, PLA,
     //flags
     CLC, SEC, CLI, SEI, CLD, SED, CLV,
     //other

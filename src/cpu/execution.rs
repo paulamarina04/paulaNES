@@ -128,7 +128,15 @@ impl super::CPU {
                 let addr_hi = 0x01;
                 self.bus.write(addr_hi, addr_lo, val);
                 self.S = (Wrapping(self.S) - Wrapping(1)).0;
-            }
+            },
+            Instruction::PLA => {
+                self.S = (Wrapping(self.S) + Wrapping(1)).0;
+                let addr_lo = self.S;
+                let addr_hi = 0x01;
+                let popped_val = self.bus.read(addr_hi, addr_lo);
+                self.A = popped_val;
+                self.update_nz_flags(popped_val);            
+            },
             // flags
             Instruction::CLC => {
                 self.C = false;
