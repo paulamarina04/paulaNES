@@ -7,6 +7,8 @@ pub enum Instruction {
     ADC(AddrMode), SBC(AddrMode), INX, DEX, INY, DEY,
     //bitwise
     AND(AddrMode), ORA(AddrMode), XOR(AddrMode), /*BIT(AddrMode),*/
+    // compare
+    CMP(AddrMode),
     // jump
     JMP(AddrMode),
     // stack

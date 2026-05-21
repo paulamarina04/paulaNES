@@ -358,6 +358,60 @@
         assert_eq!(true, cpu.N);
     }*/
 
+
+    // compare instructions
+
+    #[test]
+    fn test_cmp() {
+        let mut cpu = CPU::new();
+        // A == val
+        cpu.A = 0xFF;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // A > val (signed & unsigned)
+        cpu.A = 0x02;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // A > val (A < val for signed)
+        cpu.A = 0xFF;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(true, cpu.N);
+        // A < val (signed & unsigned)
+        cpu.A = 0x01;
+        let val = 0x02;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(true, cpu.N);
+        // A < val (A > val for signed)
+        cpu.A = 0x01;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CMP(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.N);
+    }
+
+
     // jump instructions
 
     #[test]
