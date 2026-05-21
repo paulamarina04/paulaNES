@@ -411,6 +411,106 @@
         assert_eq!(false, cpu.N);
     }
 
+    #[test]
+    fn test_cpx() {
+        let mut cpu = CPU::new();
+        // X == val
+        cpu.X = 0xFF;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // X > val (signed & unsigned)
+        cpu.X = 0x02;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // X > val (X < val for signed)
+        cpu.X = 0xFF;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(true, cpu.N);
+        // A < val (signed & unsigned)
+        cpu.X = 0x01;
+        let val = 0x02;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(true, cpu.N);
+        // X < val (X > val for signed)
+        cpu.X = 0x01;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.N);
+    }
+
+    #[test]
+    fn test_cpy() {
+        let mut cpu = CPU::new();
+        // Y == val
+        cpu.Y = 0xFF;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // Y > val (signed & unsigned)
+        cpu.Y = 0x02;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(false, cpu.N);
+        // Y > val (Y < val for signed)
+        cpu.Y = 0xFF;
+        let val = 0x01;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.C);
+        assert_eq!(true, cpu.N);
+        // Y < val (signed & unsigned)
+        cpu.Y = 0x01;
+        let val = 0x02;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(true, cpu.N);
+        // A < val (A > val for signed)
+        cpu.Y = 0x01;
+        let val = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        let instruction = Instruction::CPY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.N);
+    }
+
 
     // jump instructions
 

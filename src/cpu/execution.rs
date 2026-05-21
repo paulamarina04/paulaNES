@@ -144,6 +144,22 @@ impl super::CPU {
                 self.C = val1 as u16 + val2 as u16 > 0xFF;
                 self.update_nz_flags(result);
             },
+            Instruction::CPX(addr_mode) => {
+                let val1 = self.X;
+                let val2 = self.get_addressed_value(addr_mode);
+                let val2 = (Wrapping(!val2) + Wrapping(1)).0; // 2s complement
+                let result = (Wrapping(val1) + Wrapping(val2)).0;
+                self.C = val1 as u16 + val2 as u16 > 0xFF;
+                self.update_nz_flags(result);
+            },
+            Instruction::CPY(addr_mode) => {
+                let val1 = self.Y;
+                let val2 = self.get_addressed_value(addr_mode);
+                let val2 = (Wrapping(!val2) + Wrapping(1)).0; // 2s complement
+                let result = (Wrapping(val1) + Wrapping(val2)).0;
+                self.C = val1 as u16 + val2 as u16 > 0xFF;
+                self.update_nz_flags(result);
+            },
             // jump
             Instruction::JMP(addr_mode) => {
                 let (val_hi, val_lo) = self.get_addressed_address(addr_mode);
