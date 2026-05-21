@@ -345,18 +345,48 @@
         assert_eq!(false, cpu.N);
     }
 
-    /*#[test]
+    #[test]
     fn test_bit() {
         let mut cpu: CPU = CPU::new();
-        let val1: u8 = 0b11001100;
-        let val2: u8 = 0b10000000;
+        // bit 7
+        let val1: u8 = 0xFF;
+        let val2: u8 = 0x80;
         cpu.A = val1;
         let instruction = Instruction::BIT(AddrMode::Immediate(val2));
         cpu.execute_instruction(instruction);
-        assert_eq!(0b11001100, cpu.A);
+        assert_eq!(0xFF, cpu.A);
         assert_eq!(false, cpu.Z);
         assert_eq!(true, cpu.N);
-    }*/
+        assert_eq!(false, cpu.V);
+        // bit 6
+        let val1: u8 = 0xFF;
+        let val2: u8 = 0x40;
+        cpu.A = val1;
+        let instruction = Instruction::BIT(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+        assert_eq!(true, cpu.V);
+        // bits 5-0
+        let val1: u8 = 0xFF;
+        let val2: u8 = 0x3F;
+        cpu.A = val1;
+        let instruction = Instruction::BIT(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.A);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        // bit not set
+        cpu.A = 0x7F;
+        let val2: u8 = 0x80;
+        let instruction = Instruction::BIT(AddrMode::Immediate(val2));
+        cpu.execute_instruction(instruction);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+    }
 
 
     // compare instructions

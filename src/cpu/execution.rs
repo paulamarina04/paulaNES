@@ -129,12 +129,13 @@ impl super::CPU {
                 self.A = result;
                 self.update_nz_flags(result);
             },
-            /*Instruction::BIT(addr_mode) => {
+            Instruction::BIT(addr_mode) => {
                 let val1 = self.A;
-                let val2 = get_addressed_val(addr_mode);
+                let val2 = self.get_addressed_value(addr_mode);
                 let result = val1 & val2;
-                update_nz_flags(self, result);
-            },*/
+                self.V = result & 0x40 == 0x40;
+                self.update_nz_flags(result);
+            },
             // compare
             Instruction::CMP(addr_mode) => {
                 let val1 = self.A;
