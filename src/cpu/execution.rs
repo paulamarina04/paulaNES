@@ -16,6 +16,26 @@ impl super::CPU {
                 let data = self.A;
                 self.bus.write(addr_hi, addr_lo, data);
             }
+            Instruction::LDX(addr_mode) => {
+                let val = self.get_addressed_value(addr_mode);
+                self.X = val;
+                self.update_nz_flags(val);
+            },
+            Instruction::STX(addr_mode) => {
+                let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
+                let data = self.X;
+                self.bus.write(addr_hi, addr_lo, data);
+            }
+            Instruction::LDY(addr_mode) => {
+                let val = self.get_addressed_value(addr_mode);
+                self.Y = val;
+                self.update_nz_flags(val);
+            },
+            Instruction::STY(addr_mode) => {
+                let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
+                let data = self.Y;
+                self.bus.write(addr_hi, addr_lo, data);
+            }
             //transfer
             Instruction::TAX => {
                 let val = self.A;

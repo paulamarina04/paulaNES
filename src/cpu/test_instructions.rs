@@ -26,6 +26,52 @@
         cpu.execute_instruction(instruction);
         assert_eq!(0xFF, cpu.bus.read(addr_hi, addr_lo));
     }
+    
+    #[test]
+    fn test_ldx() {
+        let mut cpu: CPU = CPU::new();
+        let val: u8 = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        cpu.execute_instruction(Instruction::LDX(addr_mode));
+        assert_eq!(val, cpu.X);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
+    #[test]
+    fn test_stx() {
+        let mut cpu: CPU = CPU::new();
+        let addr_hi = 0x00;
+        let addr_lo = 0x00;
+        cpu.X = 0xFF;
+        let addr_mode = AddrMode::Absolute(addr_hi, addr_lo);
+        let instruction = Instruction::STX(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.bus.read(addr_hi, addr_lo));
+    }
+    
+    #[test]
+    fn test_ldy() {
+        let mut cpu: CPU = CPU::new();
+        let val: u8 = 0xFF;
+        let addr_mode = AddrMode::Immediate(val);
+        cpu.execute_instruction(Instruction::LDY(addr_mode));
+        assert_eq!(val, cpu.Y);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+    }
+
+    #[test]
+    fn test_sty() {
+        let mut cpu: CPU = CPU::new();
+        let addr_hi = 0x00;
+        let addr_lo = 0x00;
+        cpu.Y = 0xFF;
+        let addr_mode = AddrMode::Absolute(addr_hi, addr_lo);
+        let instruction = Instruction::STY(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.bus.read(addr_hi, addr_lo));
+    }
 
     // transfer instructions
 

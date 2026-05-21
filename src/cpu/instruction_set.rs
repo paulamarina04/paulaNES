@@ -1,6 +1,6 @@
 pub enum Instruction {
     //access
-    LDA(AddrMode), STA(AddrMode),
+    LDA(AddrMode), STA(AddrMode), LDX(AddrMode), STX(AddrMode), LDY(AddrMode), STY(AddrMode), 
     //transfer
     TAX, TXA, TAY, TYA, TXS, TSX,
     //arithmetic
