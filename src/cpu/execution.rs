@@ -164,20 +164,35 @@ impl super::CPU {
             // branch
             Instruction::BCC(offset) => {
                 if self.C { return; }
-
-                let total_offset = offset as i16 + 2;
-                let offset_pc_lo = (self.PC_lo as i16 + total_offset) as u8; 
-                let offset_pc_hi = 
-                if total_offset > 0 && offset_pc_lo < self.PC_lo {
-                    self.PC_hi.wrapping_add(1) // page crossed (positive)
-                } else if total_offset < 0 && offset_pc_lo > self.PC_lo {
-                    self.PC_hi.wrapping_sub(1) // page crossed (negative)
-                } else {
-                    self.PC_hi
-                };
-                
-                self.PC_lo = offset_pc_lo;
-                self.PC_hi = offset_pc_hi;
+                self.branch_with_offset(offset);
+            },
+            Instruction::BCS(offset) => {
+                if !self.C { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BNE(offset) => {
+                if self.Z { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BEQ(offset) => {
+                if !self.Z { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BPL(offset) => {
+                if self.N { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BMI(offset) => {
+                if !self.N { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BVC(offset) => {
+                if self.V { return; }
+                self.branch_with_offset(offset);
+            },
+            Instruction::BVS(offset) => {
+                if !self.V { return; }
+                self.branch_with_offset(offset);
             },
             // jump
             Instruction::JMP(addr_mode) => {
@@ -347,5 +362,20 @@ impl super::CPU {
     fn update_nz_flags(&mut self, result: u8) {
         self.Z = result == 0x00;
         self.N = result & 0x80 == 0x80;
+    }
+
+    fn branch_with_offset(&mut self, offset: i8) {
+        let total_offset = offset as i16 + 2;
+        let offset_pc_lo = (self.PC_lo as i16 + total_offset) as u8; 
+        let offset_pc_hi = 
+        if total_offset > 0 && offset_pc_lo < self.PC_lo {
+            self.PC_hi.wrapping_add(1) // page crossed (positive)
+        } else if total_offset < 0 && offset_pc_lo > self.PC_lo {
+            self.PC_hi.wrapping_sub(1) // page crossed (negative)
+        } else {
+            self.PC_hi
+        };
+        self.PC_lo = offset_pc_lo;
+        self.PC_hi = offset_pc_hi;
     }
 }

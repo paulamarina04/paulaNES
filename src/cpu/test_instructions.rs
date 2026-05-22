@@ -657,6 +657,167 @@
         assert_eq!(0xFF, cpu.PC_hi);
     }
 
+    #[test]
+    fn test_bcs() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.C = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BCS(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.C = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BCS(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_bne() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.Z = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BNE(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.Z = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BNE(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_beq() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.Z = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BEQ(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.Z = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BEQ(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_bpl() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.N = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BPL(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.N = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BPL(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_bmi() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.N = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BMI(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.N = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BMI(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_bvc() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.V = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BVC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.V = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BVC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
+    #[test]
+    fn test_bvs() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.V = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BVS(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // branch taken
+        cpu.V = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BVS(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+    }
+
 
     // jump instructions
 
