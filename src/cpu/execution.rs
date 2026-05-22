@@ -161,13 +161,31 @@ impl super::CPU {
                 self.C = val1 as u16 + val2 as u16 > 0xFF;
                 self.update_nz_flags(result);
             },
+            // branch
+            Instruction::BCC(offset) => {
+                if self.C { return; }
+
+                let total_offset = offset as i16 + 2;
+                let offset_pc_lo = (self.PC_lo as i16 + total_offset) as u8; 
+                let offset_pc_hi = 
+                if total_offset > 0 && offset_pc_lo < self.PC_lo {
+                    self.PC_hi.wrapping_add(1) // page crossed (positive)
+                } else if total_offset < 0 && offset_pc_lo > self.PC_lo {
+                    self.PC_hi.wrapping_sub(1) // page crossed (negative)
+                } else {
+                    self.PC_hi
+                };
+                
+                self.PC_lo = offset_pc_lo;
+                self.PC_hi = offset_pc_hi;
+            },
             // jump
             Instruction::JMP(addr_mode) => {
                 let (val_hi, val_lo) = self.get_addressed_address(addr_mode);
                 self.PC_hi = val_hi;
                 self.PC_lo = val_lo;
             },
-            // stack
+            // stack 
             Instruction::PHA => {
                 let val = self.A;
                 let addr_lo = self.S;

@@ -542,6 +542,122 @@
     }
 
 
+    // branch instructions
+
+    #[test]
+    fn test_bcc() {
+        let mut cpu = CPU::new();
+        // no branch taken
+        cpu.C = true;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 0x0F;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x80, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // forward branch, no page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x92, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // backward branch, no page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = -16;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x72, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // forward branch, forward page cross
+        cpu.C = false;
+        cpu.PC_lo = 0xF0;
+        cpu.PC_hi = 0x80;
+        let offset = 16;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x02, cpu.PC_lo);
+        assert_eq!(0x81, cpu.PC_hi);
+        // backward branch, backward page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x00;
+        cpu.PC_hi = 0x80;
+        let offset = -16;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xF2, cpu.PC_lo);
+        assert_eq!(0x7F, cpu.PC_hi);
+        // -1 offset, forward page cross
+        cpu.C = false;
+        cpu.PC_lo = 0xFF;
+        cpu.PC_hi = 0x80;
+        let offset = -1;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.PC_lo);
+        assert_eq!(0x81, cpu.PC_hi);
+        // max offset, no page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x00;
+        cpu.PC_hi = 0x80;
+        let offset = 127;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x81, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // max offset, forward page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = 127;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.PC_lo);
+        assert_eq!(0x81, cpu.PC_hi);
+        // min offset, no page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let offset = -128;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x02, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        // min offset, backward page cross
+        cpu.C = false;
+        cpu.PC_lo = 0x70;
+        cpu.PC_hi = 0x80;
+        let offset = -128;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xF2, cpu.PC_lo);
+        assert_eq!(0x7F, cpu.PC_hi);
+        // forward bank wrap
+        cpu.C = false;
+        cpu.PC_lo = 0xFE;
+        cpu.PC_hi = 0xFF;
+        let offset = 0;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.PC_lo);
+        assert_eq!(0x00, cpu.PC_hi);
+        // backward bank wrap
+        cpu.C = false;
+        cpu.PC_lo = 0x00;
+        cpu.PC_hi = 0x00;
+        let offset = -3;
+        let instruction = Instruction::BCC(offset);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.PC_lo);
+        assert_eq!(0xFF, cpu.PC_hi);
+    }
+
+
     // jump instructions
 
     #[test]

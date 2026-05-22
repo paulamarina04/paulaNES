@@ -9,6 +9,8 @@ pub enum Instruction {
     AND(AddrMode), ORA(AddrMode), XOR(AddrMode), BIT(AddrMode),
     // compare
     CMP(AddrMode), CPX(AddrMode), CPY(AddrMode),
+    // branch
+    BCC(i8),
     // jump
     JMP(AddrMode),
     // stack
