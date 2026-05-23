@@ -217,6 +217,23 @@ impl super::CPU {
                 self.PC_hi = sub_hi;
                 self.PC_lo = sub_lo;
             },
+            Instruction::RTS => {
+                // pop ret addr from stack
+                self.S = self.S.wrapping_add(1);
+                let popped_lo = self.bus.read(0x01, self.S);
+                self.S = self.S.wrapping_add(1);
+                let popped_hi = self.bus.read(0x01, self.S);
+                // add 1 to return address, for some reason
+                let ret_lo = popped_lo.wrapping_add(1);
+                let ret_hi = if ret_lo < popped_lo {
+                    popped_hi.wrapping_add(1)
+                } else {
+                    popped_hi
+                };
+                // jump to return address
+                self.PC_lo = ret_lo;
+                self.PC_hi = ret_hi;
+            },
             // stack 
             Instruction::PHA => {
                 let val = self.A;

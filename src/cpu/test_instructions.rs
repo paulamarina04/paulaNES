@@ -866,6 +866,37 @@
         assert_eq!(0x81, cpu.bus.read(0x01, 0xFF));
     }
 
+    #[test]
+    fn test_rts() {
+        let mut cpu = CPU::new();
+        // no page cross
+        cpu.S = 0xFD;
+        cpu.PC_lo = 0x00;
+        cpu.PC_hi = 0x00;
+        let val_lo = 0x01;
+        let val_hi = 0x80;
+        cpu.bus.write(0x01, 0xFE, val_lo);
+        cpu.bus.write(0x01, 0xFF, val_hi);
+        let instruction = Instruction::RTS;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x02, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.S);
+        // page cross when incrementing return address
+        cpu.S = 0xFD;
+        cpu.PC_lo = 0x00;
+        cpu.PC_hi = 0x00;
+        let val_lo = 0xFF;
+        let val_hi = 0x80;
+        cpu.bus.write(0x01, 0xFE, val_lo);
+        cpu.bus.write(0x01, 0xFF, val_hi);
+        let instruction = Instruction::RTS;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.PC_lo);
+        assert_eq!(0x81, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.S);
+    }
+
 
     // stack intructions
 
