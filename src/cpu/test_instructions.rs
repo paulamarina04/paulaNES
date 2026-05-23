@@ -835,6 +835,37 @@
         assert_eq!(0xFF, cpu.PC_lo);
     }
 
+    #[test]
+    fn test_jsr() {
+        let mut cpu = CPU::new();
+        // no page cross
+        cpu.S = 0xFF;
+        cpu.PC_lo = 0x80;
+        cpu.PC_hi = 0x80;
+        let val_hi = 0xFF;
+        let val_lo = 0xFF;
+        let addr_mode = AddrMode::Absolute(val_hi, val_lo);
+        let instruction = Instruction::JSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.PC_lo);
+        assert_eq!(0x82, cpu.bus.read(0x01, 0xFE));
+        assert_eq!(0x80, cpu.bus.read(0x01, 0xFF));
+        // return address page cross
+        cpu.S = 0xFF;
+        cpu.PC_lo = 0xFF;
+        cpu.PC_hi = 0x80;
+        let val_hi = 0xFF;
+        let val_lo = 0xFF;
+        let addr_mode = AddrMode::Absolute(val_hi, val_lo);
+        let instruction = Instruction::JSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.PC_lo);
+        assert_eq!(0x01, cpu.bus.read(0x01, 0xFE));
+        assert_eq!(0x81, cpu.bus.read(0x01, 0xFF));
+    }
+
 
     // stack intructions
 

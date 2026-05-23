@@ -200,6 +200,23 @@ impl super::CPU {
                 self.PC_hi = val_hi;
                 self.PC_lo = val_lo;
             },
+            Instruction::JSR(addr_mode) => {
+                let (sub_hi, sub_lo) = self.get_addressed_address(addr_mode);
+                let ret_lo = self.PC_lo.wrapping_add(2);
+                let ret_hi = if ret_lo < self.PC_lo {
+                    self.PC_hi.wrapping_add(1)
+                } else {
+                    self.PC_hi
+                };
+                // push ret addr to stack
+                self.bus.write(0x01, self.S, ret_hi);
+                self.S = self.S.wrapping_sub(1);
+                self.bus.write(0x01, self.S, ret_lo);
+                self.S = self.S.wrapping_sub(1);
+                // jump to subroutine
+                self.PC_hi = sub_hi;
+                self.PC_lo = sub_lo;
+            },
             // stack 
             Instruction::PHA => {
                 let val = self.A;
