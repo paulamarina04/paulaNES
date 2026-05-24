@@ -946,6 +946,52 @@
         assert_eq!(0x10, cpu.bus.read(0x01, 0xFF));
     }
 
+    #[test]
+    fn test_rti() {
+        let mut cpu = CPU::new();
+        // all flags set
+        cpu.S = 0xFC;
+        cpu.PC_lo = 0x0F;
+        cpu.PC_hi = 0x0F;
+        let val_lo = 0x01;
+        let val_hi = 0x80;
+        let val_flags = 0xFF;
+        cpu.bus.write(0x01, 0xFD, val_flags);
+        cpu.bus.write(0x01, 0xFE, val_lo);
+        cpu.bus.write(0x01, 0xFF, val_hi);
+        let instruction = Instruction::RTI;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.S);
+        assert_eq!(true, cpu.N);
+        assert_eq!(true, cpu.V);
+        assert_eq!(true, cpu.D);
+        assert_eq!(true, cpu.I);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(true, cpu.C);
+        // all flags clear
+        cpu.S = 0xFC;
+        cpu.PC_lo = 0x0F;
+        cpu.PC_hi = 0x0F;
+        let val_lo = 0x01;
+        let val_hi = 0x80;
+        let val_flags = 0b00110000;
+        cpu.bus.write(0x01, 0xFD, val_flags);
+        cpu.bus.write(0x01, 0xFE, val_lo);
+        cpu.bus.write(0x01, 0xFF, val_hi);
+        let instruction = Instruction::RTI;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        assert_eq!(0xFF, cpu.S);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.V);
+        assert_eq!(false, cpu.D);
+        assert_eq!(false, cpu.I);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.C);
+    }
 
     // stack intructions
 

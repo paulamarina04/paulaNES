@@ -265,6 +265,31 @@ impl super::CPU {
                 self.PC_hi = int_hi;
                 self.PC_lo = int_lo;
             },
+            Instruction::RTI => {
+                // pop flags and ret addr from stack
+                self.S = self.S.wrapping_add(1);
+                let popped_flags = self.bus.read(0x01, self.S);
+                self.S = self.S.wrapping_add(1);
+                let ret_lo = self.bus.read(0x01, self.S);
+                self.S = self.S.wrapping_add(1);
+                let ret_hi = self.bus.read(0x01, self.S);
+                // restore flags
+                let n_bit = popped_flags & 0x80;
+                let v_bit = popped_flags & 0x40;
+                let d_bit = popped_flags & 0x08;
+                let i_bit = popped_flags & 0x04;
+                let z_bit = popped_flags & 0x02;
+                let c_bit = popped_flags & 0x01; 
+                self.N = n_bit != 0x00;  
+                self.V = v_bit != 0x00;  
+                self.D = d_bit != 0x00;  
+                self.I = i_bit != 0x00;  
+                self.Z = z_bit != 0x00;  
+                self.C = c_bit != 0x00;   
+                // jump to return address
+                self.PC_lo = ret_lo;
+                self.PC_hi = ret_hi;
+            },
             // stack 
             Instruction::PHA => {
                 let val = self.A;
