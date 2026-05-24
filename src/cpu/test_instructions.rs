@@ -404,6 +404,25 @@
         assert_eq!(false, cpu.V);
     }
 
+    // shift instructions
+
+    #[test]
+    fn test_asl_a() {
+        let mut cpu = CPU::new();
+        // 1 into carry
+        cpu.A = 0b10110111;
+        cpu.C = false;
+        let instruction = Instruction::ASL_A;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01101110, cpu.A);
+        assert_eq!(true, cpu.C);
+        // 0 into carry
+        let instruction = Instruction::ASL_A;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11011100, cpu.A);
+        assert_eq!(false, cpu.C);
+    }
+
 
     // bitwise instructions
 

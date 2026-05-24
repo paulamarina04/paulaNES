@@ -123,6 +123,15 @@ impl super::CPU {
                 self.Y = result;
                 self.update_nz_flags(result);
             },
+            // shift
+            Instruction::ASL_A => {
+                let value = self.A;
+                let carry = value & 0x80 == 0x80;
+                let result = value << 1;
+                self.A = result;
+                self.C = carry;
+                self.update_nz_flags(result);
+            }
             //biwise
             Instruction::AND(addr_mode) => {
                 let val1 = self.A;
