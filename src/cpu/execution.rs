@@ -96,22 +96,22 @@ impl super::CPU {
                 self.update_nz_flags(result);
             },
             Instruction::INX => {
-                let result = self.X + 1;
+                let result = self.X.wrapping_add(1);
                 self.X = result;
                 self.update_nz_flags(result);
             },
             Instruction::DEX => {
-                let result = self.X - 1;
+                let result = self.X.wrapping_sub(1);
                 self.X = result;
                 self.update_nz_flags(result);
             },
             Instruction::INY => {
-                let result = self.Y + 1;
+                let result = self.Y.wrapping_add(1);
                 self.Y = result;
                 self.update_nz_flags(result);
             },
             Instruction::DEY => {
-                let result = self.Y - 1;
+                let result = self.Y.wrapping_sub(1);
                 self.Y = result;
                 self.update_nz_flags(result);
             },
