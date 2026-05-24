@@ -234,6 +234,37 @@ impl super::CPU {
                 self.PC_lo = ret_lo;
                 self.PC_hi = ret_hi;
             },
+            Instruction::BRK => {
+                // get interrupt jump addr 
+                let int_lo = self.bus.read(0xFF, 0xFE);
+                let int_hi = self.bus.read(0xFF, 0xFF);
+                // get return address 
+                let ret_lo = self.PC_lo.wrapping_add(2);
+                let ret_hi = if ret_lo < self.PC_lo {
+                    self.PC_hi.wrapping_add(1)
+                } else {
+                    self.PC_hi
+                };
+                // get flags value
+                let n_bit = if self.N { 0x80 } else { 0x00 };
+                let v_bit = if self.V { 0x40 } else { 0x00 };
+                let extra_and_b_bits = 0x30; // b bit is set (unlike hardware interrupt)
+                let d_bit = if self.D { 0x08 } else { 0x00 };
+                let i_bit = if self.I { 0x04 } else { 0x00 };
+                let z_bit = if self.Z { 0x02 } else { 0x00 };
+                let c_bit = if self.C { 0x01 } else { 0x00 };
+                let pushed_flags = n_bit | v_bit | extra_and_b_bits | d_bit | i_bit | z_bit | c_bit;
+                // push ret addr and flags val to stack
+                self.bus.write(0x01, self.S, ret_hi);
+                self.S = self.S.wrapping_sub(1);
+                self.bus.write(0x01, self.S, ret_lo);
+                self.S = self.S.wrapping_sub(1);
+                self.bus.write(0x01, self.S, pushed_flags);
+                self.S = self.S.wrapping_sub(1);
+                // jump to subroutine
+                self.PC_hi = int_hi;
+                self.PC_lo = int_lo;
+            },
             // stack 
             Instruction::PHA => {
                 let val = self.A;

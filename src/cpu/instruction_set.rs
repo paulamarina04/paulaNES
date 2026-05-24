@@ -12,7 +12,7 @@ pub enum Instruction {
     // branch
     BCC(i8), BCS(i8), BEQ(i8), BNE(i8), BPL(i8), BMI(i8), BVC(i8), BVS(i8), 
     // jump
-    JMP(AddrMode), JSR(AddrMode), RTS,
+    JMP(AddrMode), JSR(AddrMode), RTS, BRK,
     // stack
     PHA, PLA, PHP, PLP,
     //flags

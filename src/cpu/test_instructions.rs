@@ -897,6 +897,55 @@
         assert_eq!(0xFF, cpu.S);
     }
 
+    #[test]
+    fn test_brk() {
+        let mut cpu = CPU::new();
+        // all flags clear, no page cross
+        cpu.N = false;
+        cpu.V = false;
+        cpu.D = false;
+        cpu.I = false;
+        cpu.Z = false;
+        cpu.C = false;
+        cpu.S = 0xFF;
+        cpu.PC_lo = 0x0F;
+        cpu.PC_hi = 0x0F;
+        let val_lo = 0x01;
+        let val_hi = 0x80;
+        cpu.bus.write(0xFF, 0xFE, val_lo);
+        cpu.bus.write(0xFF, 0xFF, val_hi);
+        let instruction = Instruction::BRK;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        assert_eq!(0xFC, cpu.S);
+        assert_eq!(0b00110000, cpu.bus.read(0x01, 0xFD));
+        assert_eq!(0x11, cpu.bus.read(0x01, 0xFE));
+        assert_eq!(0x0F, cpu.bus.read(0x01, 0xFF));
+        // all flags set, page cross on ret addr
+        cpu.N = true;
+        cpu.V = true;
+        cpu.D = true;
+        cpu.I = true;
+        cpu.Z = true;
+        cpu.C = true;
+        cpu.S = 0xFF;
+        cpu.PC_lo = 0xFF;
+        cpu.PC_hi = 0x0F;
+        let val_lo = 0x01;
+        let val_hi = 0x80;
+        cpu.bus.write(0xFF, 0xFE, val_lo);
+        cpu.bus.write(0xFF, 0xFF, val_hi);
+        let instruction = Instruction::BRK;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x01, cpu.PC_lo);
+        assert_eq!(0x80, cpu.PC_hi);
+        assert_eq!(0xFC, cpu.S);
+        assert_eq!(0xFF, cpu.bus.read(0x01, 0xFD));
+        assert_eq!(0x01, cpu.bus.read(0x01, 0xFE));
+        assert_eq!(0x10, cpu.bus.read(0x01, 0xFF));
+    }
+
 
     // stack intructions
 
