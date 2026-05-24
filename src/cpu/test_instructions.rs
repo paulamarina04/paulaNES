@@ -407,8 +407,9 @@
     // shift instructions
 
     #[test]
-    fn test_asl_a() {
+    fn test_asl() {
         let mut cpu = CPU::new();
+        // ACCUMULATOR
         // 1 into carry
         cpu.A = 0b10110111;
         cpu.C = false;
@@ -423,10 +424,7 @@
         cpu.execute_instruction(instruction);
         assert_eq!(0b11011100, cpu.A);
         assert_eq!(false, cpu.C);
-    }
-    #[test]
-    fn test_asl_mem() {
-        let mut cpu = CPU::new();
+        // MEMORY
         // 1 into carry
         let val = 0b10110111;
         cpu.C = false;
