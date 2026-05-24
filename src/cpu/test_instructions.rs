@@ -292,32 +292,68 @@
     #[test]
     fn test_inx() {
         let mut cpu = CPU::new();
+        // no overflow
         cpu.X = 0x00;
         let instruction = Instruction::INX;
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.X);
         assert_eq!(false, cpu.Z);
         assert_eq!(false, cpu.N);
+        // overflow
+        cpu.X = 0xFF;
+        cpu.C = false;
+        cpu.V = false;
+        let instruction = Instruction::INX;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.X);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.V);
     }
     #[test]
     fn test_dex() {
         let mut cpu = CPU::new();
+        // no underflow
         cpu.X = 0x01;
         let instruction = Instruction::DEX;
         cpu.execute_instruction(instruction);
         assert_eq!(0x00, cpu.X);
         assert_eq!(true, cpu.Z);
         assert_eq!(false, cpu.N);
+        // underflow
+        cpu.X = 0x00;
+        cpu.C = false;
+        cpu.V = false;
+        let instruction = Instruction::DEX;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.X);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.V);
     }
     #[test]
     fn test_iny() {
         let mut cpu = CPU::new();
+        // no overflow
         cpu.Y = 0x00;
         let instruction = Instruction::INY;
         cpu.execute_instruction(instruction);
         assert_eq!(0x01, cpu.Y);
         assert_eq!(false, cpu.Z);
         assert_eq!(false, cpu.N);
+        // overflow
+        cpu.Y = 0xFF;
+        cpu.C = false;
+        cpu.V = false;
+        let instruction = Instruction::INY;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x00, cpu.Y);
+        assert_eq!(true, cpu.Z);
+        assert_eq!(false, cpu.N);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.V);
     }
     #[test]
     fn test_dey() {
@@ -328,6 +364,17 @@
         assert_eq!(0x00, cpu.Y);
         assert_eq!(true, cpu.Z);
         assert_eq!(false, cpu.N);
+        // underflow
+        cpu.Y = 0x00;
+        cpu.C = false;
+        cpu.V = false;
+        let instruction = Instruction::DEY;
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.Y);
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.V);
     }
 
 
