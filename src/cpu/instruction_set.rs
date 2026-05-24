@@ -24,6 +24,7 @@ pub enum Instruction {
 }
 
 pub enum AddrMode {
+    Accumulator,
     Immediate(u8),
     Absolute(u8, u8),
     AbsoluteIndexedX(u8, u8),

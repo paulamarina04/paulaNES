@@ -22,6 +22,26 @@ fn test_indirect_value() {
     cpu.get_addressed_value(addr_mode);
 }
 
+#[test]
+#[should_panic(expected = "Accumulator values must be accessed implicitly")]
+fn test_accumulator_value() {
+    let cpu = CPU::new();
+    let hi = 0x00;
+    let lo = 0x00;
+    let addr_mode = AddrMode::Accumulator;
+    cpu.get_addressed_value(addr_mode);
+}
+
+#[test]
+#[should_panic(expected = "Attempted to fetch an address from the accumulator")]
+fn test_accumulator_address() {
+    let cpu = CPU::new();
+    let hi = 0x00;
+    let lo = 0x00;
+    let addr_mode = AddrMode::Accumulator;
+    cpu.get_addressed_address(addr_mode);
+}
+
 // addressed values
 
 #[test]

@@ -406,7 +406,10 @@ impl super::CPU {
         return match addr_mode {
             AddrMode::Indirect(..) => {
                 panic!("Attempted to fetch a value using a plain indirect addressing mode");
-            }
+            },
+            AddrMode::Accumulator => {
+                panic!("Accumulator values must be accessed implicitly");
+            },
             AddrMode::Immediate(op) => { 
                 op
             },
@@ -421,6 +424,9 @@ impl super::CPU {
         return match addr_mode {
             AddrMode::Immediate(..) => {
                 panic!("Attempted to fetch an address using an immediate addressing mode");
+            },
+            AddrMode::Accumulator => {
+                panic!("Attempted to fetch an address from the accumulator");
             },
             AddrMode::Absolute(hi,lo ) => {
                 (hi, lo)
