@@ -290,6 +290,33 @@
     }
 
     #[test]
+    fn test_dec() {
+        let mut cpu = CPU::new();
+        // no underflow
+        let val = 0x10;
+        cpu.bus.write(0x00, 0x80, val);
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::DEC(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0x0F, cpu.bus.read(0x00, 0x80));
+        assert_eq!(false, cpu.Z);
+        assert_eq!(false, cpu.N);
+        // overflow
+        let val = 0x00;
+        cpu.C = false;
+        cpu.V = false;
+        cpu.bus.write(0x00, 0x80, val);
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::DEC(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0xFF, cpu.bus.read(0x00, 0x80));
+        assert_eq!(false, cpu.Z);
+        assert_eq!(true, cpu.N);
+        assert_eq!(false, cpu.C);
+        assert_eq!(false, cpu.V);
+    }
+
+    #[test]
     fn test_inx() {
         let mut cpu = CPU::new();
         // no overflow

@@ -95,6 +95,14 @@ impl super::CPU {
                 self.bus.write(addr_hi, addr_lo, result); 
                 self.update_nz_flags(result);
             },
+            Instruction::DEC(addr_mode) => {
+                let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
+                let value = self.bus.read(addr_hi, addr_lo);
+                let result = value.wrapping_sub(1);
+                self.bus.write(addr_hi, addr_lo, value); // RMW shenanigans, og value written first
+                self.bus.write(addr_hi, addr_lo, result); 
+                self.update_nz_flags(result);
+            },
             Instruction::INX => {
                 let result = self.X.wrapping_add(1);
                 self.X = result;
