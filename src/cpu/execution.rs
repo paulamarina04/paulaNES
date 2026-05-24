@@ -124,23 +124,27 @@ impl super::CPU {
                 self.update_nz_flags(result);
             },
             // shift
-            Instruction::ASL_A => {
-                let value = self.A;
-                let carry = value & 0x80 == 0x80;
-                let result = value << 1;
-                self.A = result;
-                self.C = carry;
-                self.update_nz_flags(result);
-            },
-            Instruction::ASL_MEM(addr_mode) => {
-                let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
-                let value = self.bus.read(addr_hi, addr_lo);
-                let carry = value & 0x80 == 0x80;
-                let result = value << 1;
-                self.bus.write(addr_hi, addr_lo, value); // RMW shenanigans, og value written first
-                self.bus.write(addr_hi, addr_lo, result);
-                self.C = carry;
-                self.update_nz_flags(result);
+            Instruction::ASL(addr_mode) => {
+                match addr_mode {
+                    AddrMode::Accumulator => {
+                        let value = self.A;
+                        let carry = value & 0x80 == 0x80;
+                        let result = value << 1;
+                        self.A = result;
+                        self.C = carry;
+                        self.update_nz_flags(result);
+                    },
+                    _ => {
+                        let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
+                        let value = self.bus.read(addr_hi, addr_lo);
+                        let carry = value & 0x80 == 0x80;
+                        let result = value << 1;
+                        self.bus.write(addr_hi, addr_lo, value); // RMW shenanigans, og value written first
+                        self.bus.write(addr_hi, addr_lo, result);
+                        self.C = carry;
+                        self.update_nz_flags(result);
+                    }
+                }
             },
             //biwise
             Instruction::AND(addr_mode) => {

@@ -412,12 +412,14 @@
         // 1 into carry
         cpu.A = 0b10110111;
         cpu.C = false;
-        let instruction = Instruction::ASL_A;
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::ASL(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0b01101110, cpu.A);
         assert_eq!(true, cpu.C);
         // 0 into carry
-        let instruction = Instruction::ASL_A;
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::ASL(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0b11011100, cpu.A);
         assert_eq!(false, cpu.C);
@@ -430,13 +432,13 @@
         cpu.C = false;
         cpu.bus.write(0x00, 0x80, val);
         let addr_mode = AddrMode::ZeroPage(0x80);
-        let instruction = Instruction::ASL_MEM(addr_mode);
+        let instruction = Instruction::ASL(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0b01101110, cpu.bus.read(0x00, 0x80));
         assert_eq!(true, cpu.C);
         // 0 into carry
         let addr_mode = AddrMode::ZeroPage(0x80);
-        let instruction = Instruction::ASL_MEM(addr_mode);
+        let instruction = Instruction::ASL(addr_mode);
         cpu.execute_instruction(instruction);
         assert_eq!(0b11011100, cpu.bus.read(0x00, 0x80));
         assert_eq!(false, cpu.C);
