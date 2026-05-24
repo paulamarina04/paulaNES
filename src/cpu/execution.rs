@@ -125,26 +125,14 @@ impl super::CPU {
             },
             // shift
             Instruction::ASL(addr_mode) => {
-                match addr_mode {
-                    AddrMode::Accumulator => {
-                        let value = self.A;
-                        let carry = value & 0x80 == 0x80;
-                        let result = value << 1;
-                        self.A = result;
-                        self.C = carry;
-                        self.update_nz_flags(result);
-                    },
-                    _ => {
-                        let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
-                        let value = self.bus.read(addr_hi, addr_lo);
-                        let carry = value & 0x80 == 0x80;
-                        let result = value << 1;
-                        self.bus.write(addr_hi, addr_lo, value); // RMW shenanigans, og value written first
-                        self.bus.write(addr_hi, addr_lo, result);
-                        self.C = carry;
-                        self.update_nz_flags(result);
-                    }
-                }
+                let mut operation = |cpu: &mut super::CPU, value: u8| -> u8 { 
+                    let carry = value & 0x80 == 0x80;
+                    let result = value << 1;
+                    cpu.C = carry;
+                    cpu.update_nz_flags(result);
+                    return result;
+                };
+                self.execute_read_write_modify(addr_mode, &mut operation);
             },
             //biwise
             Instruction::AND(addr_mode) => {
@@ -512,5 +500,22 @@ impl super::CPU {
         };
         self.PC_lo = offset_pc_lo;
         self.PC_hi = offset_pc_hi;
+    }
+
+    fn execute_read_write_modify(&mut self, addr_mode: AddrMode, operation: &mut dyn FnMut(&mut super::CPU, u8) -> u8) {
+        match addr_mode {
+            AddrMode::Accumulator => {
+                let value = self.A;
+                let result = operation(self, value);
+                self.A = result;
+            },
+            _ => {
+                let (addr_hi, addr_lo) = self.get_addressed_address(addr_mode);
+                let value = self.bus.read(addr_hi, addr_lo);
+                let result = operation(self, value);
+                self.bus.write(addr_hi, addr_lo, value); // RMW shenanigans, og value written first
+                self.bus.write(addr_hi, addr_lo, result);
+            }
+        }
     }
 }
