@@ -6,7 +6,7 @@ pub enum Instruction {
     //arithmetic
     ADC(AddrMode), SBC(AddrMode), INC(AddrMode), DEC(AddrMode), INX, DEX, INY, DEY,
     //shift
-    ASL(AddrMode),
+    ASL(AddrMode), LSR(AddrMode),
     //bitwise
     AND(AddrMode), ORA(AddrMode), XOR(AddrMode), BIT(AddrMode),
     // compare

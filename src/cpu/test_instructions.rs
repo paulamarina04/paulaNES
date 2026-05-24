@@ -442,6 +442,42 @@
         assert_eq!(false, cpu.C);
     }
 
+    #[test]
+    fn test_lsr() {
+        let mut cpu = CPU::new();
+        // ACCUMULATOR
+        // 1 into carry
+        cpu.A = 0b11101101;
+        cpu.C = false;
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::LSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01110110, cpu.A);
+        assert_eq!(true, cpu.C);
+        // 0 into carry
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::LSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00111011, cpu.A);
+        assert_eq!(false, cpu.C);
+        // MEMORY
+        // 1 into carry
+        let val = 0b11101101;
+        cpu.C = false;
+        cpu.bus.write(0x00, 0x80, val);
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::LSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01110110, cpu.bus.read(0x00, 0x80));
+        assert_eq!(true, cpu.C);
+        // 0 into carry
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::LSR(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b00111011, cpu.bus.read(0x00, 0x80));
+        assert_eq!(false, cpu.C);
+    }
+
 
     // bitwise instructions
 
