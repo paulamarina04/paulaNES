@@ -144,6 +144,21 @@ impl super::CPU {
                 };
                 self.execute_read_write_modify(addr_mode, &mut operation);
             },
+            Instruction::ROL(addr_mode) => {
+                let mut operation = |cpu: &mut super::CPU, value: u8| -> u8 { 
+                    let carry = value & 0x80 == 0x80;
+                    let shifted_val = value << 1;
+                    let result = if cpu.C {
+                        shifted_val + 1
+                    } else {
+                        shifted_val
+                    };
+                    cpu.C = carry;
+                    cpu.update_nz_flags(result);
+                    return result;
+                };
+                self.execute_read_write_modify(addr_mode, &mut operation);
+            },
             //biwise
             Instruction::AND(addr_mode) => {
                 let val1 = self.A;

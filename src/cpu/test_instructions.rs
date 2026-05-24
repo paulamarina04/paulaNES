@@ -478,6 +478,42 @@
         assert_eq!(false, cpu.C);
     }
 
+    #[test]
+    fn test_rol() {
+        let mut cpu = CPU::new();
+        // ACCUMULATOR
+        // 1 into carry, carry clear
+        cpu.A = 0b10110111;
+        cpu.C = false;
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::ROL(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01101110, cpu.A);
+        assert_eq!(true, cpu.C);
+        // 0 into carry, carry set
+        let addr_mode = AddrMode::Accumulator;
+        let instruction = Instruction::ROL(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11011101, cpu.A);
+        assert_eq!(false, cpu.C);
+        // MEMORY
+        // 1 into carry, carry clear
+        let val = 0b10110111;
+        cpu.C = false;
+        cpu.bus.write(0x00, 0x80, val);
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::ROL(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b01101110, cpu.bus.read(0x00, 0x80));
+        assert_eq!(true, cpu.C);
+        // 0 into carry, carry set
+        let addr_mode = AddrMode::ZeroPage(0x80);
+        let instruction = Instruction::ROL(addr_mode);
+        cpu.execute_instruction(instruction);
+        assert_eq!(0b11011101, cpu.bus.read(0x00, 0x80));
+        assert_eq!(false, cpu.C);
+    }
+
 
     // bitwise instructions
 
