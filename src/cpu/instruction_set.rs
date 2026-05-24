@@ -4,7 +4,7 @@ pub enum Instruction {
     //transfer
     TAX, TXA, TAY, TYA, TXS, TSX,
     //arithmetic
-    ADC(AddrMode), SBC(AddrMode), INX, DEX, INY, DEY,
+    ADC(AddrMode), SBC(AddrMode), INC(AddrMode), INX, DEX, INY, DEY,
     //bitwise
     AND(AddrMode), ORA(AddrMode), XOR(AddrMode), BIT(AddrMode),
     // compare
